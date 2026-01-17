@@ -17,6 +17,14 @@ A web application for visualizing, creating, and downloading guitar chord diagra
 - **Unique names**: Validates chord names in real-time
 - **Edit & Delete**: Full CRUD functionality for custom chords
 
+### 🎼 Create and Manage Songs
+- **Song Editor**: Create songs with metadata (Title, Date, Notes, Key, Capo, BPM, Effects)
+- **Text Editor**: Paste or type song lyrics and chords (preserves formatting)
+- **Chord Diagrams**: Select up to 8 chord diagrams to include with each song
+- **Folders**: Organize songs into folders (many-to-many relationship)
+- **PDF Export**: Download songs as formatted PDF documents
+- **Full CRUD**: Create, edit, delete songs and folders
+
 ### 🎵 Generate Song Chord Sequences
 - Select up to 8 chords for your song
 - Generates a visual diagram of the entire chord progression
@@ -32,7 +40,9 @@ A web application for visualizing, creating, and downloading guitar chord diagra
 1. Open `index.html` in your web browser
 2. Click on any family button (C, D, E, F, G, A, B) to explore chords
 3. Click "Create Chord" to build your own custom chords
-4. Use "Gen Song Chords" to create chord sequences
+4. Click "Create Song" to create songs with lyrics and chord diagrams
+5. Click "Songs" to manage your song library and folders
+6. Use "Gen Song Chords" to create chord sequences
 
 ## Technologies
 
@@ -40,6 +50,7 @@ A web application for visualizing, creating, and downloading guitar chord diagra
 - **Vanilla JavaScript** (no frameworks)
 - **CSS3** for responsive design
 - **localStorage** for data persistence
+- **jsPDF** for PDF generation
 - **SQL Server** database schema (optional backend)
 
 ## Database Setup (Optional)
@@ -48,8 +59,9 @@ If you want to connect to SQL Server instead of using localStorage:
 
 1. Open SQL Server Management Studio
 2. Run the script: `ChordFamilies-Database.sql`
-3. Implement a backend API (Node.js, .NET, etc.)
-4. Modify `dbService.js` to use API calls instead of localStorage
+3. Run the script: `ChordFamilies-Songs-Extension.sql`
+4. Implement a backend API (Node.js, .NET, etc.)
+5. Modify `dbService.js` and `songsService.js` to use API calls instead of localStorage
 
 The app currently works standalone using browser localStorage - no backend required!
 
@@ -67,10 +79,14 @@ The app currently works standalone using browser localStorage - no backend requi
 - Validates finger positions and chord names
 
 ### Architecture
-- `dbService.js`: Data layer (simulates SQL Server with localStorage)
-- `chordEditor.js`: Interactive canvas editor (523 lines)
+- `dbService.js`: Chord data layer (simulates SQL Server with localStorage)
+- `songsService.js`: Songs data layer (localStorage)
+- `chordEditor.js`: Interactive canvas chord editor
+- `songEditor.js`: Song creation and editing
+- `songsManager.js`: Songs and folders management
 - `chordRenderer.js`: SVG/PNG rendering engine
-- `songChords.js`: Song sequence generator
+- `songPDFGenerator.js`: PDF generation for songs
+- `songChords.js`: Chord sequence generator
 - `app.js`: Main application logic
 
 ## Project Structure
@@ -81,12 +97,17 @@ Chord-Families/
 ├── app.js                  # Core application
 ├── chordData.js            # Chord data integration
 ├── chordRenderer.js        # Rendering engine
-├── dbService.js            # Data service (localStorage)
-├── chordEditor.js          # Interactive editor
+├── dbService.js            # Chord data service (localStorage)
+├── songsService.js         # Songs data service (localStorage)
+├── chordEditor.js          # Interactive chord editor
+├── songEditor.js           # Song editor
+├── songsManager.js         # Songs/folders manager
+├── songPDFGenerator.js     # PDF generator
 ├── songChords.js           # Sequence generator
 ├── guitar-pattern.js       # Background pattern
 ├── styles.css              # Complete styling
-└── ChordFamilies-Database.sql  # SQL Server schema
+├── ChordFamilies-Database.sql       # SQL Server schema
+└── ChordFamilies-Songs-Extension.sql # Songs tables
 ```
 
 ## Browser Support

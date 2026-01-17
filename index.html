@@ -11,6 +11,9 @@
     <div id="app">
         <!-- Vista principal: familias de acordes -->
         <div id="families-view" class="view">
+            <div class="top-button-container">
+                <button id="open-songs-btn" class="utility-btn">Songs</button>
+            </div>
             <div class="main-buttons">
                 <button id="gen-song-chords-btn" class="utility-btn">Gen Song Chords</button>
                 <button id="create-chord-btn" class="utility-btn">Create Chord</button>
@@ -179,15 +182,115 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Songs Manager -->
+        <div id="songs-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content modal-large">
+                <button id="close-songs-modal" class="close-btn">×</button>
+                <h2>Songs</h2>
+                
+                <!-- Vista de Carpetas -->
+                <div id="folders-view">
+                    <div class="folders-actions">
+                        <button id="create-new-folder-btn" class="download-btn">Create Folder</button>
+                        <button id="create-new-song-btn" class="utility-btn">Create New Song</button>
+                    </div>
+                    <div id="folders-list" class="folders-list"></div>
+                </div>
+                
+                <!-- Vista de Lista de Canciones -->
+                <div id="songs-list-view" class="hidden">
+                    <button id="back-to-folders-btn" class="back-btn">← Back to Folders</button>
+                    <h3 id="folder-title"></h3>
+                    <div id="songs-list" class="songs-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Song Editor -->
+        <div id="song-editor-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content modal-large modal-song-editor">
+                <button id="close-song-editor-modal" class="close-btn">×</button>
+                <h2>Create/Edit Song</h2>
+                
+                <div class="song-editor-container">
+                    <!-- Metadatos -->
+                    <div class="song-metadata">
+                        <h3>Metadata</h3>
+                        <table class="metadata-table">
+                            <tr>
+                                <td>Title:</td>
+                                <td><input type="text" id="song-title-input" required></td>
+                            </tr>
+                            <tr>
+                                <td>Date:</td>
+                                <td><input type="text" id="song-date-input"></td>
+                            </tr>
+                            <tr>
+                                <td>Notes:</td>
+                                <td><input type="text" id="song-notes-input"></td>
+                            </tr>
+                            <tr>
+                                <td>Key:</td>
+                                <td><input type="text" id="song-key-input"></td>
+                            </tr>
+                            <tr>
+                                <td>Capo:</td>
+                                <td><input type="text" id="song-capo-input"></td>
+                            </tr>
+                            <tr>
+                                <td>BPM:</td>
+                                <td><input type="text" id="song-bpm-input"></td>
+                            </tr>
+                            <tr>
+                                <td>Effects:</td>
+                                <td><input type="text" id="song-effects-input"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <!-- Editor de contenido -->
+                    <div class="song-content-editor">
+                        <h3>Song Content</h3>
+                        <textarea id="song-content-textarea" placeholder="Paste or type your song here...\n\nChords go on the line above lyrics.\nDouble line break separates sections."></textarea>
+                    </div>
+                    
+                    <!-- Selector de diagramas -->
+                    <div class="song-diagram-selector">
+                        <h3>Selected Chords (up to 8)</h3>
+                        <div id="selected-chords-list" class="selected-chords-list"></div>
+                        
+                        <h3>Available Chords</h3>
+                        <div id="chord-selector-grid" class="chord-selector-grid"></div>
+                    </div>
+                    
+                    <!-- Selector de carpetas -->
+                    <div id="folder-selection" class="folder-selection"></div>
+                    
+                    <!-- Acciones -->
+                    <div class="song-editor-actions">
+                        <button id="save-song-btn" class="download-btn">Save Song</button>
+                        <button id="cancel-song-edit-btn" class="utility-btn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="guitar-pattern.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="dbService.js"></script>
+    <script src="songsService.js"></script>
     <script src="chordData.js"></script>
     <script src="chordRenderer.js"></script>
+    <script src="songPDFGenerator.js"></script>
     <script src="app.js"></script>
     <script src="songChords.js"></script>
     <script src="chordEditor.js"></script>
+    <script src="songEditor.js"></script>
+    <script src="songsManager.js"></script>
 </body>
 </html>

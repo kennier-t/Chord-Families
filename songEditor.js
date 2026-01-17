@@ -1,0 +1,241 @@
+const SongEditor = (function() {
+    'use strict';
+    
+    let currentSongId = null;
+    let selectedChordIds = [];
+    
+    function initialize() {
+        document.getElementById('open-create-song-btn').addEventListener('click', () => openEditor());
+        document.getElementById('close-song-editor-modal').addEventListener('click', closeEditor);
+        document.getElementById('save-song-btn').addEventListener('click', saveSong);
+        document.getElementById('cancel-song-edit-btn').addEventListener('click', closeEditor);
+        
+        populateChordSelector();
+    }
+    
+    function openEditor(songId = null) {
+        currentSongId = songId;
+        selectedChordIds = [];
+        
+        if (songId) {
+            const song = SONGS_SERVICE.getSongById(songId);
+            if (!song) {
+                alert('Song not found');
+                return;
+            }
+            
+            document.getElementById('song-title-input').value = song.title;
+            document.getElementById('song-date-input').value = song.songDate;
+            document.getElementById('song-notes-input').value = song.notes;
+            document.getElementById('song-key-input').value = song.songKey;
+            document.getElementById('song-capo-input').value = song.capo;
+            document.getElementById('song-bpm-input').value = song.bpm;
+            document.getElementById('song-effects-input').value = song.effects;
+            document.getElementById('song-content-textarea').value = song.contentText;
+            
+            selectedChordIds = SONGS_SERVICE.getSongChordDiagrams(songId);
+            updateSelectedChordsList();
+            
+            const folderIds = SONGS_SERVICE.getSongFolders(songId).map(f => f.id);
+            document.querySelectorAll('.folder-checkbox').forEach(cb => {
+                cb.checked = folderIds.includes(parseInt(cb.value));
+            });
+        } else {
+            document.getElementById('song-title-input').value = '';
+            document.getElementById('song-date-input').value = '';
+            document.getElementById('song-notes-input').value = '';
+            document.getElementById('song-key-input').value = '';
+            document.getElementById('song-capo-input').value = '';
+            document.getElementById('song-bpm-input').value = '';
+            document.getElementById('song-effects-input').value = '';
+            document.getElementById('song-content-textarea').value = '';
+            
+            document.querySelectorAll('.folder-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            updateSelectedChordsList();
+        }
+        
+        refreshFolderCheckboxes();
+        document.getElementById('song-editor-modal').classList.remove('hidden');
+    }
+    
+    function closeEditor() {
+        document.getElementById('song-editor-modal').classList.add('hidden');
+        currentSongId = null;
+        selectedChordIds = [];
+    }
+    
+    function populateChordSelector() {
+        const container = document.getElementById('chord-selector-grid');
+        const allChords = DB_SERVICE.getAllChords();
+        
+        container.innerHTML = '';
+        
+        allChords.forEach(chord => {
+            const item = document.createElement('div');
+            item.className = 'chord-selector-item';
+            item.onclick = () => addChordToSelection(chord.id);
+            
+            const title = document.createElement('h4');
+            title.textContent = chord.name;
+            
+            const renderer = new ChordRenderer(chord);
+            const svgString = renderer.getSVGString(false);
+            
+            item.appendChild(title);
+            item.innerHTML += svgString;
+            
+            container.appendChild(item);
+        });
+    }
+    
+    function addChordToSelection(chordId) {
+        if (selectedChordIds.length >= 8) {
+            alert('Maximum 8 chords allowed');
+            return;
+        }
+        
+        if (selectedChordIds.includes(chordId)) {
+            return;
+        }
+        
+        selectedChordIds.push(chordId);
+        updateSelectedChordsList();
+    }
+    
+    function removeChordFromSelection(index) {
+        selectedChordIds.splice(index, 1);
+        updateSelectedChordsList();
+    }
+    
+    function moveChordUp(index) {
+        if (index === 0) return;
+        [selectedChordIds[index], selectedChordIds[index - 1]] = [selectedChordIds[index - 1], selectedChordIds[index]];
+        updateSelectedChordsList();
+    }
+    
+    function moveChordDown(index) {
+        if (index === selectedChordIds.length - 1) return;
+        [selectedChordIds[index], selectedChordIds[index + 1]] = [selectedChordIds[index + 1], selectedChordIds[index]];
+        updateSelectedChordsList();
+    }
+    
+    function updateSelectedChordsList() {
+        const container = document.getElementById('selected-chords-list');
+        container.innerHTML = '';
+        
+        if (selectedChordIds.length === 0) {
+            container.innerHTML = '<div class="empty-message">No chords selected. Click on chords below to add them.</div>';
+            return;
+        }
+        
+        selectedChordIds.forEach((chordId, index) => {
+            const chord = DB_SERVICE.getChordById(chordId);
+            if (!chord) return;
+            
+            const item = document.createElement('div');
+            item.className = 'selected-chord-item';
+            
+            const info = document.createElement('div');
+            info.className = 'selected-chord-info';
+            info.innerHTML = `<span>${index + 1}. ${chord.name}</span>`;
+            
+            const actions = document.createElement('div');
+            actions.className = 'selected-chord-actions';
+            actions.innerHTML = `
+                <button class="mini-btn" onclick="SongEditor.moveChordUp(${index})" ${index === 0 ? 'disabled' : ''}>↑</button>
+                <button class="mini-btn" onclick="SongEditor.moveChordDown(${index})" ${index === selectedChordIds.length - 1 ? 'disabled' : ''}>↓</button>
+                <button class="mini-btn delete-btn" onclick="SongEditor.removeChordFromSelection(${index})">×</button>
+            `;
+            
+            item.appendChild(info);
+            item.appendChild(actions);
+            container.appendChild(item);
+        });
+    }
+    
+    function refreshFolderCheckboxes() {
+        const container = document.getElementById('folder-selection');
+        const folders = SONGS_SERVICE.getAllFolders();
+        
+        container.innerHTML = '<h4>Save to Folders:</h4>';
+        
+        if (folders.length === 0) {
+            container.innerHTML += '<p class="empty-message">No folders available. Create one in Songs view first.</p>';
+            return;
+        }
+        
+        folders.forEach(folder => {
+            const label = document.createElement('label');
+            label.className = 'folder-checkbox-label';
+            label.innerHTML = `
+                <input type="checkbox" class="folder-checkbox" value="${folder.id}">
+                <span>${folder.name}</span>
+            `;
+            container.appendChild(label);
+        });
+    }
+    
+    function saveSong() {
+        const title = document.getElementById('song-title-input').value.trim();
+        
+        if (!title) {
+            alert('Title is required');
+            return;
+        }
+        
+        const contentText = document.getElementById('song-content-textarea').value;
+        
+        if (!contentText.trim()) {
+            alert('Song content cannot be empty');
+            return;
+        }
+        
+        const selectedFolders = Array.from(document.querySelectorAll('.folder-checkbox:checked')).map(cb => parseInt(cb.value));
+        
+        const songData = {
+            title: title,
+            songDate: document.getElementById('song-date-input').value.trim(),
+            notes: document.getElementById('song-notes-input').value.trim(),
+            songKey: document.getElementById('song-key-input').value.trim(),
+            capo: document.getElementById('song-capo-input').value.trim(),
+            bpm: document.getElementById('song-bpm-input').value.trim(),
+            effects: document.getElementById('song-effects-input').value.trim(),
+            contentText: contentText,
+            chordIds: selectedChordIds,
+            folderIds: selectedFolders
+        };
+        
+        try {
+            if (currentSongId) {
+                SONGS_SERVICE.updateSong(currentSongId, songData);
+                alert('Song updated successfully!');
+            } else {
+                SONGS_SERVICE.createSong(songData);
+                alert('Song created successfully!');
+            }
+            
+            if (typeof SongsManager !== 'undefined' && SongsManager.refreshFoldersList) {
+                SongsManager.refreshFoldersList();
+            }
+            
+            closeEditor();
+        } catch (error) {
+            alert('Error saving song: ' + error.message);
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initialize);
+    
+    return {
+        openEditor,
+        closeEditor,
+        addChordToSelection,
+        removeChordFromSelection,
+        moveChordUp,
+        moveChordDown,
+        saveSong
+    };
+})();
