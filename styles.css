@@ -116,6 +116,60 @@ h2::after {
     background: var(--primary);
 }
 
+/* Botones principales (Gen Song Chords y Create Chord) */
+.main-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 16px;
+}
+
+.utility-btn {
+    padding: 12px 24px;
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(139, 111, 71, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.utility-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.utility-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.utility-btn:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    box-shadow: 0 4px 16px rgba(139, 111, 71, 0.3);
+    transform: translateY(-2px);
+}
+
+.utility-btn:active {
+    transform: translateY(0);
+}
+
 /* Familias */
 .families-grid {
     display: grid;
@@ -357,6 +411,8 @@ h2::after {
     box-shadow: var(--shadow-xl);
     max-width: 600px;
     width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
     z-index: 1001;
     border: 1px solid var(--border);
     animation: slideUp 0.3s ease-out;
@@ -424,10 +480,115 @@ h2::after {
     background: white;
 }
 
+/* Modal Gen Song Chords */
+.modal-large {
+    max-width: 700px !important;
+}
+
+.modal-description {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 24px;
+}
+
+#chord-selector-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.chord-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chord-slot label {
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+
+.chord-select {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background: white;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chord-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(139, 111, 71, 0.1);
+}
+
+.chord-select:hover {
+    border-color: var(--accent);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+#song-chords-preview {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+#song-chords-preview h3 {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+#song-chords-image {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+}
+
+#song-chords-image img,
+#song-chords-image svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.modal-message {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 24px 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .families-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    #chord-selector-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .main-buttons {
+        flex-direction: column;
     }
 }
 

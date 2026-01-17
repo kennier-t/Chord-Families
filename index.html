@@ -11,6 +11,10 @@
     <div id="app">
         <!-- Vista principal: familias de acordes -->
         <div id="families-view" class="view">
+            <div class="main-buttons">
+                <button id="gen-song-chords-btn" class="utility-btn">Gen Song Chords</button>
+                <button id="create-chord-btn" class="utility-btn">Create Chord</button>
+            </div>
             <h1>Chord Families</h1>
             <div class="families-grid">
                 <button class="family-btn" data-family="C">C</button>
@@ -47,6 +51,75 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal para Gen Song Chords -->
+        <div id="gen-song-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content modal-large">
+                <button id="close-gen-song-modal" class="close-btn">×</button>
+                <h2>Generate Song Chords</h2>
+                <p class="modal-description">Select up to 6 chords for your song (in order)</p>
+                <div id="chord-selector-container">
+                    <div class="chord-slot" data-slot="0">
+                        <label>Chord 1:</label>
+                        <select class="chord-select">
+                            <option value="">-- Select Chord --</option>
+                        </select>
+                    </div>
+                    <div class="chord-slot" data-slot="1">
+                        <label>Chord 2:</label>
+                        <select class="chord-select">
+                            <option value="">-- Select Chord --</option>
+                        </select>
+                    </div>
+                    <div class="chord-slot" data-slot="2">
+                        <label>Chord 3:</label>
+                        <select class="chord-select">
+                            <option value="">-- Select Chord --</option>
+                        </select>
+                    </div>
+                    <div class="chord-slot" data-slot="3">
+                        <label>Chord 4:</label>
+                        <select class="chord-select">
+                            <option value="">-- Select Chord --</option>
+                        </select>
+                    </div>
+                    <div class="chord-slot" data-slot="4">
+                        <label>Chord 5:</label>
+                        <select class="chord-select">
+                            <option value="">-- Select Chord --</option>
+                        </select>
+                    </div>
+                    <div class="chord-slot" data-slot="5">
+                        <label>Chord 6:</label>
+                        <select class="chord-select">
+                            <option value="">-- Select Chord --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="generate-song-chords-btn" class="download-btn">Generate</button>
+                </div>
+                <div id="song-chords-preview" class="hidden">
+                    <h3>Preview:</h3>
+                    <div id="song-chords-image"></div>
+                    <div class="download-options">
+                        <button id="download-song-chords-png" class="download-btn">Download PNG</button>
+                        <button id="download-song-chords-svg" class="download-btn">Download SVG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Create Chord -->
+        <div id="create-chord-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <button id="close-create-chord-modal" class="close-btn">×</button>
+                <h2>Create Chord</h2>
+                <p class="modal-message">This functionality is not available yet</p>
+            </div>
+        </div>
     </div>
 
     <script src="guitar-pattern.js"></script>
@@ -54,5 +127,6 @@
     <script src="chordData.js"></script>
     <script src="chordRenderer.js"></script>
     <script src="app.js"></script>
+    <script src="songChords.js"></script>
 </body>
 </html>
