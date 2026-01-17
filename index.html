@@ -58,7 +58,7 @@
             <div class="modal-content modal-large">
                 <button id="close-gen-song-modal" class="close-btn">×</button>
                 <h2>Generate Song Chords</h2>
-                <p class="modal-description">Select up to 6 chords for your song (in order)</p>
+                <p class="modal-description">Select up to 8 chords for your song (in order)</p>
                 <div id="chord-selector-container">
                     <div class="chord-slot" data-slot="0">
                         <label>Chord 1:</label>
@@ -94,6 +94,18 @@
                         <label>Chord 6:</label>
                         <select class="chord-select">
                             <option value="">-- Select Chord --</option>
+                        </select>
+                    </div>
+                    <div class="chord-slot chord-slot-extra" data-slot="6">
+                        <label>Chord 7 (Optional):</label>
+                        <select class="chord-select chord-select-extra" disabled>
+                            <option value="">-- Fill first 6 chords --</option>
+                        </select>
+                    </div>
+                    <div class="chord-slot chord-slot-extra" data-slot="7">
+                        <label>Chord 8 (Optional):</label>
+                        <select class="chord-select chord-select-extra-2" disabled>
+                            <option value="">-- Fill chord 7 first --</option>
                         </select>
                     </div>
                 </div>

@@ -4,9 +4,8 @@
 
 const SONG_DIAGRAM_WIDTH_CM = 3.0;
 const SONG_DIAGRAM_HEIGHT_CM = 3.5;
-const SONG_CHORDS_COUNT = 6;
-const SONG_TOTAL_WIDTH = SONG_DIAGRAM_WIDTH_CM * SONG_CHORDS_COUNT * CM_TO_PX;
-const SONG_TOTAL_HEIGHT = SONG_DIAGRAM_HEIGHT_CM * CM_TO_PX;
+const SONG_CHORDS_BASE_COUNT = 6;
+const SONG_CHORDS_MAX_COUNT = 8;
 
 // Variables globales
 let selectedChords = [];
@@ -118,6 +117,50 @@ function updateAllSelectors() {
 // Manejar selección de acorde
 function handleChordSelection(event) {
     updateAllSelectors();
+    checkAndToggleSeventhChord();
+}
+
+// Verificar si los primeros 6 acordes están llenos y habilitar/deshabilitar el séptimo y octavo
+function checkAndToggleSeventhChord() {
+    const selects = document.querySelectorAll('.chord-select:not(.chord-select-extra):not(.chord-select-extra-2)');
+    const seventhSelect = document.querySelector('.chord-select-extra');
+    const eighthSelect = document.querySelector('.chord-select-extra-2');
+    
+    // Contar cuántos de los primeros 6 están seleccionados
+    let filledCount = 0;
+    selects.forEach(select => {
+        if (select.value !== '') {
+            filledCount++;
+        }
+    });
+    
+    // Habilitar séptimo acorde solo si los 6 primeros están llenos
+    if (filledCount === 6) {
+        seventhSelect.disabled = false;
+        if (seventhSelect.options[0].text.includes('Fill first')) {
+            seventhSelect.options[0].text = '-- Select Chord --';
+        }
+        
+        // Habilitar octavo acorde solo si el séptimo está seleccionado
+        if (seventhSelect.value !== '') {
+            eighthSelect.disabled = false;
+            if (eighthSelect.options[0].text.includes('Fill chord')) {
+                eighthSelect.options[0].text = '-- Select Chord --';
+            }
+        } else {
+            eighthSelect.disabled = true;
+            eighthSelect.value = '';
+            eighthSelect.options[0].text = '-- Fill chord 7 first --';
+        }
+    } else {
+        seventhSelect.disabled = true;
+        seventhSelect.value = '';
+        seventhSelect.options[0].text = '-- Fill first 6 chords --';
+        
+        eighthSelect.disabled = true;
+        eighthSelect.value = '';
+        eighthSelect.options[0].text = '-- Fill chord 7 first --';
+    }
 }
 
 // Abrir modal de Gen Song Chords
@@ -130,6 +173,8 @@ function openGenSongModal() {
     });
     // Actualizar selectores para reflejar que no hay selecciones
     updateAllSelectors();
+    // Resetear estado del séptimo acorde
+    checkAndToggleSeventhChord();
 }
 
 // Cerrar modal de Gen Song Chords
@@ -149,10 +194,13 @@ function closeCreateChordModal() {
 
 // Generar imagen de acordes de canción
 function generateSongChords() {
-    // Obtener acordes seleccionados
+    // Obtener acordes seleccionados (solo los primeros 6 o incluir extras si están seleccionados)
     selectedChords = [];
-    const selects = document.querySelectorAll('.chord-select');
+    const selects = document.querySelectorAll('.chord-select:not(.chord-select-extra):not(.chord-select-extra-2)');
+    const seventhSelect = document.querySelector('.chord-select-extra');
+    const eighthSelect = document.querySelector('.chord-select-extra-2');
     
+    // Procesar primeros 6 acordes
     selects.forEach(select => {
         if (select.value !== '') {
             const chordIndex = parseInt(select.value);
@@ -161,6 +209,18 @@ function generateSongChords() {
             selectedChords.push(null); // Espacio vacío
         }
     });
+    
+    // Agregar séptimo acorde solo si está seleccionado
+    if (seventhSelect.value !== '') {
+        const chordIndex = parseInt(seventhSelect.value);
+        selectedChords.push(allChordsData[chordIndex]);
+        
+        // Agregar octavo acorde solo si está seleccionado
+        if (eighthSelect.value !== '') {
+            const chordIndex = parseInt(eighthSelect.value);
+            selectedChords.push(allChordsData[chordIndex]);
+        }
+    }
     
     // Generar y mostrar preview
     const previewContainer = document.getElementById('song-chords-image');
@@ -173,17 +233,20 @@ function generateSongChords() {
     document.getElementById('song-chords-preview').classList.remove('hidden');
 }
 
-// Generar SVG de acordes de canción (6 acordes horizontales)
+// Generar SVG de acordes de canción (6 o 7 acordes horizontales)
 function generateSongChordsSVG(transparent = false) {
     const bgColor = transparent ? 'none' : 'white';
+    const chordCount = selectedChords.length;
+    const totalWidth = SONG_DIAGRAM_WIDTH_CM * chordCount * CM_TO_PX;
+    const totalHeight = SONG_DIAGRAM_HEIGHT_CM * CM_TO_PX;
     
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${SONG_TOTAL_WIDTH}" height="${SONG_TOTAL_HEIGHT}" viewBox="0 0 ${SONG_TOTAL_WIDTH} ${SONG_TOTAL_HEIGHT}">`;
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}">`;
     
     // Fondo
-    svg += `<rect width="${SONG_TOTAL_WIDTH}" height="${SONG_TOTAL_HEIGHT}" fill="${bgColor}"/>`;
+    svg += `<rect width="${totalWidth}" height="${totalHeight}" fill="${bgColor}"/>`;
     
     // Dibujar cada acorde
-    for (let i = 0; i < SONG_CHORDS_COUNT; i++) {
+    for (let i = 0; i < chordCount; i++) {
         const xOffset = i * DIAGRAM_WIDTH;
         const chord = selectedChords[i];
         
@@ -301,19 +364,23 @@ function renderEmptyChordDiagram(xOffset) {
 
 // Generar Canvas para PNG
 function generateSongChordsCanvas(transparent = false) {
+    const chordCount = selectedChords.length;
+    const totalWidth = SONG_DIAGRAM_WIDTH_CM * chordCount * CM_TO_PX;
+    const totalHeight = SONG_DIAGRAM_HEIGHT_CM * CM_TO_PX;
+    
     const canvas = document.createElement('canvas');
-    canvas.width = SONG_TOTAL_WIDTH;
-    canvas.height = SONG_TOTAL_HEIGHT;
+    canvas.width = totalWidth;
+    canvas.height = totalHeight;
     const ctx = canvas.getContext('2d');
     
     // Fondo
     if (!transparent) {
         ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, SONG_TOTAL_WIDTH, SONG_TOTAL_HEIGHT);
+        ctx.fillRect(0, 0, totalWidth, totalHeight);
     }
     
     // Dibujar cada acorde
-    for (let i = 0; i < SONG_CHORDS_COUNT; i++) {
+    for (let i = 0; i < chordCount; i++) {
         const xOffset = i * DIAGRAM_WIDTH;
         const chord = selectedChords[i];
         
