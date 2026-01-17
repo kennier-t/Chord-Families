@@ -36,7 +36,9 @@ body {
 .view {
     max-width: 1280px;
     margin: 0 auto;
-    background: var(--bg-card);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     padding: 72px 56px;
     border-radius: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(139, 111, 71, 0.08);
@@ -53,6 +55,7 @@ body {
     height: 1px;
     background: linear-gradient(90deg, transparent 0%, var(--primary) 50%, transparent 100%);
     opacity: 0.3;
+    z-index: 2;
 }
 
 .hidden {
@@ -106,11 +109,19 @@ h2::after {
 /* Familias */
 .families-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(8, 1fr);
     gap: 20px;
     max-width: 950px;
     margin: 0 auto;
 }
+
+.family-btn:nth-child(1) { grid-column: 1 / 3; }
+.family-btn:nth-child(2) { grid-column: 3 / 5; }
+.family-btn:nth-child(3) { grid-column: 5 / 7; }
+.family-btn:nth-child(4) { grid-column: 7 / 9; }
+.family-btn:nth-child(5) { grid-column: 2 / 4; }
+.family-btn:nth-child(6) { grid-column: 4 / 6; }
+.family-btn:nth-child(7) { grid-column: 6 / 8; }
 
 .family-btn {
     padding: 48px 24px;
@@ -325,7 +336,9 @@ h2::after {
 
 .modal-content {
     position: relative;
-    background: var(--bg-card);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     padding: 56px;
     border-radius: 0;
     box-shadow: var(--shadow-xl);
@@ -396,4 +409,17 @@ h2::after {
     max-width: 100%;
     height: auto;
     background: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .families-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .families-grid {
+        grid-template-columns: 1fr;
+    }
 }

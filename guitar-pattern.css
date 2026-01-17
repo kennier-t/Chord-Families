@@ -1,0 +1,60 @@
+/* Guitar Pattern Background - Apple-like Minimal Style */
+/* El patrón principal se genera mediante JavaScript (guitar-pattern.js) */
+
+/* El patrón se mantiene consistente en toda la página */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body::before,
+    body::after {
+        background-size: 
+            100px auto,
+            80px auto,
+            120px auto,
+            90px auto,
+            110px auto,
+            95px auto,
+            115px auto,
+            85px auto,
+            105px auto,
+            88px auto;
+    }
+    
+    .view::after {
+        background-size: 
+            70px auto,
+            95px auto,
+            85px auto,
+            65px auto,
+            90px auto,
+            75px auto,
+            88px auto,
+            72px auto;
+    }
+}
+
+@media (min-width: 1920px) {
+    body::before,
+    body::after {
+        background-size: 
+            220px auto,
+            180px auto,
+            240px auto,
+            190px auto,
+            210px auto,
+            200px auto,
+            230px auto,
+            195px auto,
+            215px auto,
+            185px auto;
+    }
+}
+
+/* Optimización de rendimiento */
+body::before,
+body::after,
+.view::after {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
