@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,7 @@
 </head>
 <body>
     <div id="app">
-        <!-- Vista principal: familias de acordes -->
+        <!-- Main view: chord families -->
         <div id="families-view" class="view">
             <div class="top-buttons-container">
                 <button id="gen-song-chords-btn" class="utility-btn utility-btn-modern">Gen Song Chords</button>
@@ -42,7 +42,7 @@
             <div id="chords-gallery" class="chords-gallery"></div>
         </div>
 
-        <!-- Modal para acorde individual -->
+        <!-- Modal for individual chord -->
         <div id="chord-modal" class="modal hidden">
             <div class="modal-overlay"></div>
             <div class="modal-content">
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <!-- Modal para Gen Song Chords -->
+        <!-- Modal for Gen Song Chords -->
         <div id="gen-song-modal" class="modal hidden">
             <div class="modal-overlay"></div>
             <div class="modal-content modal-large">
@@ -127,7 +127,7 @@
             </div>
         </div>
 
-        <!-- Modal para Create Chord con CRUD -->
+        <!-- Modal for Create Chord with CRUD -->
         <div id="create-chord-modal" class="modal hidden">
             <div class="modal-overlay"></div>
             <div class="modal-content modal-large">
@@ -191,7 +191,7 @@
                 <button id="close-songs-modal" class="close-btn">×</button>
                 <h2>Songs</h2>
                 
-                <!-- Vista de Carpetas -->
+                <!-- Folders View -->
                 <div id="folders-view">
                     <div class="folders-actions">
                         <button id="create-new-folder-btn" class="download-btn">Create Folder</button>
@@ -211,7 +211,7 @@
                     <div id="folders-list" class="folders-list"></div>
                 </div>
                 
-                <!-- Vista de Lista de Canciones -->
+                <!-- Songs List View -->
                 <div id="songs-list-view" class="hidden">
                     <button id="back-to-folders-btn" class="back-btn">← Back to Folders</button>
                     <h3 id="folder-title"></h3>
@@ -228,7 +228,7 @@
                 <h2>Create/Edit Song</h2>
                 
                 <div class="song-editor-container">
-                    <!-- Metadatos -->
+                    <!-- Metadata -->
                     <div class="song-metadata">
                         <h3>Metadata</h3>
                         <table class="metadata-table">
@@ -263,7 +263,7 @@
                         </table>
                     </div>
                     
-                    <!-- Editor de contenido -->
+                    <!-- Content Editor -->
                     <div class="song-content-editor">
                         <div class="content-header">
                             <h3>Song Content</h3>
@@ -283,7 +283,7 @@
                         </div>
                     </div>
                     
-                    <!-- Selector de diagramas -->
+                    <!-- Diagram Selector -->
                     <div class="song-diagram-selector">
                         <h3>Selected Chords (up to 8)</h3>
                         <div id="selected-chords-list" class="selected-chords-list"></div>
@@ -292,10 +292,10 @@
                         <div id="chord-selector-grid" class="chord-selector-grid"></div>
                     </div>
                     
-                    <!-- Selector de carpetas -->
+                    <!-- Folder Selector -->
                     <div id="folder-selection" class="folder-selection"></div>
                     
-                    <!-- Acciones -->
+                    <!-- Actions -->
                     <div class="song-editor-actions">
                         <button id="save-song-btn" class="download-btn">Save Song</button>
                         <button id="cancel-song-edit-btn" class="utility-btn">Cancel</button>

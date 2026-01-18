@@ -3,7 +3,7 @@ const SongEditor = (function() {
     
     let currentSongId = null;
     let selectedChordIds = [];
-    let personalizedLinePosition = 50; // Porcentaje por defecto
+    let personalizedLinePosition = 50; // Default percentage
     let isDraggingLine = false;
     
     function initialize() {

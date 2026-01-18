@@ -98,11 +98,11 @@ function updateAllSelectors() {
         }
     });
     
-    // Actualizar cada selector
+    // Update each selector
     selects.forEach(select => {
         const currentValue = select.value;
         
-        // Limpiar y repoblar
+        // Clear and repopulate
         select.innerHTML = '<option value="">-- Select Chord --</option>';
         
         allChordsData.forEach((chord, index) => {
@@ -119,7 +119,7 @@ function updateAllSelectors() {
             select.appendChild(option);
         });
         
-        // Restaurar valor seleccionado
+        // Restore selected value
         select.value = currentValue;
     });
 }
@@ -252,16 +252,16 @@ function generateSongChordsSVG(transparent = false) {
     
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}">`;
     
-    // Fondo
+    // Background
     svg += `<rect width="${totalWidth}" height="${totalHeight}" fill="${bgColor}"/>`;
     
-    // Dibujar cada acorde
+    // Draw each chord
     for (let i = 0; i < chordCount; i++) {
         const xOffset = i * DIAGRAM_WIDTH;
         const chord = selectedChords[i];
         
         if (chord) {
-            // Dibujar acorde real
+            // Draw real chord
             svg += renderChordInSVG(chord, xOffset);
         } else {
             // Draw empty diagram
@@ -273,12 +273,12 @@ function generateSongChordsSVG(transparent = false) {
     return svg;
 }
 
-// Renderizar un acorde individual dentro del SVG grande
+// Render an individual chord inside the large SVG
 function renderChordInSVG(chord, xOffset) {
     const renderer = new ChordRenderer(chord);
     let chordSVG = renderer.getSVGString(false);
     
-    // Extraer el contenido del SVG (sin las etiquetas svg y el fondo)
+    // Extract the SVG content (without the svg tags and the background)
     const parser = new DOMParser();
     const doc = parser.parseFromString(chordSVG, 'image/svg+xml');
     const svgElement = doc.querySelector('svg');
@@ -286,7 +286,7 @@ function renderChordInSVG(chord, xOffset) {
     let content = '';
     Array.from(svgElement.children).forEach(child => {
         if (child.tagName !== 'rect' || child.getAttribute('width') !== renderer.width.toString()) {
-            // Agregar offset a todos los elementos
+            // Add offset to all elements
             const clonedChild = child.cloneNode(true);
             offsetSVGElement(clonedChild, xOffset, 0);
             content += new XMLSerializer().serializeToString(clonedChild);
@@ -296,7 +296,7 @@ function renderChordInSVG(chord, xOffset) {
     return content;
 }
 
-// Aplicar offset a un elemento SVG y sus hijos
+// Apply offset to an SVG element and its children
 function offsetSVGElement(element, xOffset, yOffset) {
     // Position attributes
     if (element.hasAttribute('x')) {
@@ -324,7 +324,7 @@ function offsetSVGElement(element, xOffset, yOffset) {
         element.setAttribute('cy', parseFloat(element.getAttribute('cy')) + yOffset);
     }
     
-    // Procesar hijos recursivamente
+    // Process children recursively
     Array.from(element.children).forEach(child => {
         offsetSVGElement(child, xOffset, yOffset);
     });
@@ -356,7 +356,7 @@ function renderEmptyChordDiagram(xOffset) {
     
     let svg = '';
     
-    // Dibujar cuerdas (verticales)
+    // Draw strings (vertical)
     for (let i = 0; i < strings; i++) {
         const x = diagramLeft + i * stringSpacing;
         svg += `<line x1="${x}" y1="${diagramTop}" x2="${x}" y2="${diagramTop + diagramHeight}" stroke="black" stroke-width="${stringThickness}"/>`;
@@ -372,7 +372,7 @@ function renderEmptyChordDiagram(xOffset) {
     return svg;
 }
 
-// Generar Canvas para PNG
+// Generate Canvas for PNG
 function generateSongChordsCanvas(transparent = false) {
     const chordCount = selectedChords.length;
     const totalWidth = SONG_DIAGRAM_WIDTH_CM * chordCount * CM_TO_PX;
@@ -383,19 +383,19 @@ function generateSongChordsCanvas(transparent = false) {
     canvas.height = totalHeight;
     const ctx = canvas.getContext('2d');
     
-    // Fondo
+    // Background
     if (!transparent) {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, totalWidth, totalHeight);
     }
     
-    // Dibujar cada acorde
+    // Draw each chord
     for (let i = 0; i < chordCount; i++) {
         const xOffset = i * DIAGRAM_WIDTH;
         const chord = selectedChords[i];
         
         if (chord) {
-            // Dibujar acorde real
+            // Draw real chord
             const renderer = new ChordRenderer(chord);
             const chordCanvas = renderer.renderCanvas(false);
             ctx.drawImage(chordCanvas, xOffset, 0);
@@ -434,7 +434,7 @@ function renderEmptyChordDiagramCanvas(ctx, xOffset) {
     
     ctx.strokeStyle = 'black';
     
-    // Dibujar cuerdas (verticales)
+    // Draw strings (vertical)
     ctx.lineWidth = stringThickness;
     for (let i = 0; i < strings; i++) {
         const x = diagramLeft + i * stringSpacing;

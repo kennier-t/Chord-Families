@@ -11,9 +11,9 @@
         maxSize: 260,
         minRotation: -45,
         maxRotation: 45,
-        minOpacity: 0.18, // Aumentado significativamente
-        maxOpacity: 0.35, // Aumentado significativamente
-        animationDuration: 180 // segundos
+        minOpacity: 0.18, // Significantly increased
+        maxOpacity: 0.35, // Significantly increased
+        animationDuration: 180 // seconds
     };
     
     // Function to generate random number in range
@@ -155,13 +155,13 @@
         // Add animation styles
         document.head.appendChild(createAnimationStyles());
         
-        // Crear contenedor
+        // Create container
         const container = createPatternContainer();
         
         // Generate organic positions
         const positions = generatePositions(config.guitarCount);
         
-        // Crear guitarras
+        // Create guitars
         positions.forEach((position, index) => {
             const guitar = createGuitar(position, index);
             // Store rotation as CSS variable

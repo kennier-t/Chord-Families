@@ -30,7 +30,7 @@ class ChordRenderer {
         // Determine if fret number needs to be displayed
         this.showFretNumber = this.chord.baseFret > 1;
         
-        // Espaciado
+        // Spacing
         this.stringSpacing = this.diagramWidth / (this.strings - 1);
         this.fretSpacing = this.diagramHeight / this.frets;
         
@@ -125,7 +125,7 @@ class ChordRenderer {
             const finger = this.chord.fingers[i];
             
             if (fret > 0 && finger > 0) {
-                // No dibujar si es parte de una barra
+                // Don't draw if it's part of a barre
                 const isBarre = this.chord.barres && this.chord.barres.includes(fret) && 
                                this.chord.frets.filter(f => f === fret).length > 1;
                 
@@ -175,7 +175,7 @@ class ChordRenderer {
             if (this.chord.frets[i] === -1) {
                 const x = this.diagramLeft + i * this.stringSpacing;
                 const y = this.diagramTop - 5;
-                ctx.fillText('X', x, y);
+                ctx.fillText('x', x, y);
             }
         }
         
@@ -288,12 +288,12 @@ class ChordRenderer {
         return canvas;
     }
     
-    // Obtener SVG como string
+    // Get SVG as string
     getSVGString(transparent = false) {
         return this.renderSVG(transparent);
     }
     
-    // Obtener PNG como blob
+    // Get PNG as blob
     getPNGBlob(transparent = false) {
         return new Promise((resolve) => {
             const canvas = this.renderCanvas(transparent);
@@ -301,7 +301,7 @@ class ChordRenderer {
         });
     }
     
-    // Obtener data URL para preview
+    // Get data URL for preview
     getDataURL(format = 'svg', transparent = false) {
         if (format === 'svg') {
             const svgString = this.getSVGString(transparent);
