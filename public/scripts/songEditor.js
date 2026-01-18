@@ -227,63 +227,160 @@ const SongEditor = (function() {
         }
         
         selectedChordIds.push(chordId);
-        updateSelectedChordsList();
+        updateSelectedChordsList(selectedChordIds.length - 1, null);
         detectAndUpdateKey();
     }
     
     function removeChordFromSelection(index) {
         selectedChordIds.splice(index, 1);
-        updateSelectedChordsList();
+        updateSelectedChordsList(null, index);
         detectAndUpdateKey();
     }
     
-    async function moveChordUp(index) {
+    function moveChordUp(index) {
         if (index === 0) return;
         [selectedChordIds[index], selectedChordIds[index - 1]] = [selectedChordIds[index - 1], selectedChordIds[index]];
-        await updateSelectedChordsList();
+        swapChordItems(index, index - 1);
         detectAndUpdateKey();
     }
     
-    async function moveChordDown(index) {
+    function moveChordDown(index) {
         if (index === selectedChordIds.length - 1) return;
         [selectedChordIds[index], selectedChordIds[index + 1]] = [selectedChordIds[index + 1], selectedChordIds[index]];
-        await updateSelectedChordsList();
+        swapChordItems(index, index + 1);
         detectAndUpdateKey();
     }
     
-    async function updateSelectedChordsList() {
+    function swapChordItems(index1, index2) {
         const container = document.getElementById('selected-chords-list');
-        container.innerHTML = '';
+        const items = container.querySelectorAll('.selected-chord-item');
         
+        const item1 = items[index1];
+        const item2 = items[index2];
+        
+        if (!item1 || !item2) return;
+        
+        // Swap DOM positions
+        if (index1 < index2) {
+            container.insertBefore(item2, item1);
+        } else {
+            container.insertBefore(item1, item2);
+        }
+        
+        // Update both items' content
+        updateChordIndices();
+    }
+    
+    async function updateSelectedChordsList(addedIndex = null, removedIndex = null) {
+        const container = document.getElementById('selected-chords-list');
+        
+        // If list is empty, show empty message
         if (selectedChordIds.length === 0) {
             container.innerHTML = '<div class="empty-message">No chords selected. Click on chords below to add them.</div>';
             return;
         }
         
-        for (let index = 0; index < selectedChordIds.length; index++) {
-            const chordId = selectedChordIds[index];
+        // Remove empty message if present
+        const emptyMsg = container.querySelector('.empty-message');
+        if (emptyMsg) {
+            emptyMsg.remove();
+        }
+        
+        // If a chord was removed, remove that specific item and update indices
+        if (removedIndex !== null) {
+            const items = container.querySelectorAll('.selected-chord-item');
+            if (items[removedIndex]) {
+                items[removedIndex].remove();
+            }
+            // Update remaining items' indices
+            updateChordIndices();
+            return;
+        }
+        
+        // If a chord was added, just append the new one
+        if (addedIndex !== null && addedIndex === selectedChordIds.length - 1) {
+            const chordId = selectedChordIds[addedIndex];
             const chord = await DB_SERVICE.getChordById(chordId);
             if (!chord) return;
             
-            const item = document.createElement('div');
-            item.className = 'selected-chord-item';
+            const item = createChordItem(chord, addedIndex);
+            container.appendChild(item);
             
-            const info = document.createElement('div');
-            info.className = 'selected-chord-info';
-            info.innerHTML = `<span>${index + 1}. ${chord.name}</span>`;
+            // Update previous item's down button if exists
+            if (addedIndex > 0) {
+                const prevItem = container.querySelectorAll('.selected-chord-item')[addedIndex - 1];
+                if (prevItem) {
+                    const downBtn = prevItem.querySelector('.mini-btn:nth-child(2)');
+                    if (downBtn) downBtn.disabled = false;
+                }
+            }
+            return;
+        }
+        
+        // Full rebuild (for initial load, reordering, etc.)
+        container.innerHTML = '';
+        
+        for (let index = 0; index < selectedChordIds.length; index++) {
+            const chordId = selectedChordIds[index];
+            const chord = await DB_SERVICE.getChordById(chordId);
+            if (!chord) continue;
             
-            const actions = document.createElement('div');
-            actions.className = 'selected-chord-actions';
-            actions.innerHTML = `
-                <button class="mini-btn" onclick="SongEditor.moveChordUp(${index})" ${index === 0 ? 'disabled' : ''}>↑</button>
-                <button class="mini-btn" onclick="SongEditor.moveChordDown(${index})" ${index === selectedChordIds.length - 1 ? 'disabled' : ''}>↓</button>
-                <button class="mini-btn delete-btn" onclick="SongEditor.removeChordFromSelection(${index})">×</button>
-            `;
-            
-            item.appendChild(info);
-            item.appendChild(actions);
+            const item = createChordItem(chord, index);
             container.appendChild(item);
         }
+    }
+    
+    function createChordItem(chord, index) {
+        const item = document.createElement('div');
+        item.className = 'selected-chord-item';
+        item.dataset.index = index;
+        
+        const info = document.createElement('div');
+        info.className = 'selected-chord-info';
+        info.innerHTML = `<span>${index + 1}. ${chord.name}</span>`;
+        
+        const actions = document.createElement('div');
+        actions.className = 'selected-chord-actions';
+        actions.innerHTML = `
+            <button class="mini-btn" onclick="SongEditor.moveChordUp(${index})" ${index === 0 ? 'disabled' : ''}>↑</button>
+            <button class="mini-btn" onclick="SongEditor.moveChordDown(${index})" ${index === selectedChordIds.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="mini-btn delete-btn" onclick="SongEditor.removeChordFromSelection(${index})">×</button>
+        `;
+        
+        item.appendChild(info);
+        item.appendChild(actions);
+        return item;
+    }
+    
+    function updateChordIndices() {
+        const container = document.getElementById('selected-chords-list');
+        const items = container.querySelectorAll('.selected-chord-item');
+        const totalItems = items.length;
+        
+        items.forEach((item, index) => {
+            item.dataset.index = index;
+            
+            // Extract chord name from existing text (format: "N. ChordName")
+            const info = item.querySelector('.selected-chord-info span');
+            if (info) {
+                const currentText = info.textContent;
+                const chordName = currentText.replace(/^\d+\.\s*/, ''); // Remove old number prefix
+                info.textContent = `${index + 1}. ${chordName}`;
+            }
+            
+            // Update button onclick handlers and disabled states
+            const buttons = item.querySelectorAll('.mini-btn');
+            if (buttons.length >= 3) {
+                // Up button
+                buttons[0].onclick = () => SongEditor.moveChordUp(index);
+                buttons[0].disabled = index === 0;
+                // Down button
+                buttons[1].onclick = () => SongEditor.moveChordDown(index);
+                buttons[1].disabled = index === totalItems - 1;
+                // Delete button
+                buttons[2].onclick = () => SongEditor.removeChordFromSelection(index);
+            }
+        });
     }
     
     // Detect song key based on selected chords
