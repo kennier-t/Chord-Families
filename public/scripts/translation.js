@@ -106,6 +106,10 @@ const translations = {
                         'Key': 'Key',
                         'Folder': 'Folder',
                         'Artist': 'Artist',
+                        'Visible Keys:': 'Visible Keys:',
+                        'Visible Folders:': 'Visible Folders:',
+                        'Visible Artists:': 'Visible Artists:',
+                        'Visible': 'Visible',
                     },
                     es: {
                         'Gen Song Chords': 'Generar Acordes',
@@ -224,6 +228,10 @@ const translations = {
                         'Key': 'Tonalidad',
                         'Folder': 'Carpeta',
                         'Artist': 'Artista',
+                        'Visible Keys:': 'Tonalidades Visibles:',
+                        'Visible Folders:': 'Carpetas Visibles:',
+                        'Visible Artists:': 'Artistas Visibles:',
+                        'Visible': 'Visibles',
                     }};
 
 let currentLanguage = localStorage.getItem('language') || 'es';

@@ -225,6 +225,16 @@
                                 <option value="folder" data-translate="Folder">Folder</option>
                                 <option value="artist" data-translate="Artist">Artist</option>
                             </select>
+                            <label for="value-filter-btn" data-translate="Visible:">Visible:</label>
+                            <div class="custom-select-container">
+                                <button id="value-filter-btn" class="custom-select" onclick="SongsManager.toggleValueDropdown()">
+                                    <span id="value-filter-display">All</span>
+                                    <span class="custom-select-arrow">▼</span>
+                                </button>
+                                <div id="value-dropdown" class="custom-dropdown hidden">
+                                    <!-- Options will be populated dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div id="songs-list" class="songs-list"></div>

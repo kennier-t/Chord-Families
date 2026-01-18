@@ -858,6 +858,7 @@ h2::after {
     gap: 6px;
     margin-left: auto;
     flex-shrink: 0;
+    position: relative;
 }
 
 .sort-control label {
@@ -885,6 +886,87 @@ h2::after {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 2px rgba(139, 111, 71, 0.1);
+}
+
+/* Custom select styling to match native select exactly */
+.custom-select-container {
+    position: relative;
+}
+
+.custom-select {
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-primary);
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 160px;
+    font-family: inherit;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+}
+
+.custom-select:hover {
+    border-color: var(--primary);
+}
+
+.custom-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(139, 111, 71, 0.1);
+}
+
+.custom-select-arrow {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+.custom-select.active .custom-select-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-top: none;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s ease;
+}
+
+.custom-dropdown-item:hover {
+    background: var(--bg-main);
+}
+
+.custom-dropdown-item input[type="checkbox"] {
+    margin: 0;
+    margin-right: 8px;
+    accent-color: var(--primary);
+}
+
+.custom-dropdown-item label {
+    cursor: pointer;
+    user-select: none;
+    flex: 1;
 }
 
 .folders-list {
@@ -1079,6 +1161,7 @@ h2::after {
     color: var(--text-secondary);
     font-weight: 400;
 }
+
 
 /* Song Editor Modal */
 .modal-song-editor {

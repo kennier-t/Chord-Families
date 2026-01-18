@@ -4,6 +4,7 @@ const SongsManager = (function() {
     let currentFolderId = null;
     let currentSortMode = 'date-asc'; // Default: oldest first for folders
     let currentAllSongsSortMode = 'key'; // Default: sort by key for ALL view
+    let selectedValues = {}; // Selected values for each sort mode, e.g. {key: ['A', 'C'], folder: ['Folder1']}
     const ALL_FOLDER_ID = '__ALL__'; // Special ID for the ALL folder
     
     function initialize() {
@@ -56,7 +57,10 @@ const SongsManager = (function() {
                     sortSelect.value = currentAllSongsSortMode;
                 }
             }
-            
+
+            // Initialize value filter for ALL view
+            updateValueFilter([], []);
+
             document.getElementById('folders-view').classList.add('hidden');
             document.getElementById('songs-list-view').classList.remove('hidden');
             await refreshAllSongsView();
@@ -196,15 +200,18 @@ const SongsManager = (function() {
         const container = document.getElementById('songs-list');
         const allSongs = await SONGS_SERVICE.getAllSongs();
         const folders = await SONGS_SERVICE.getAllFolders();
-        
+
         container.innerHTML = '';
-        
+
         if (allSongs.length === 0) {
             container.innerHTML = '<div class="empty-message" data-translate="No songs in this folder. Create your first song!">No songs in this folder. Create your first song!</div>';
             translatePage();
             return;
         }
-        
+
+        // Update value filter with available values
+        await updateValueFilter(allSongs, folders);
+
         if (currentAllSongsSortMode === 'key') {
             await renderSongsGroupedByKey(container, allSongs);
         } else if (currentAllSongsSortMode === 'folder') {
@@ -212,10 +219,163 @@ const SongsManager = (function() {
         } else if (currentAllSongsSortMode === 'artist') {
             await renderSongsGroupedByArtist(container, allSongs);
         }
-        
+
         translatePage();
     }
-    
+
+    async function updateValueFilter(songs, folders) {
+        const dropdownElement = document.getElementById('value-dropdown');
+        const displayElement = document.getElementById('value-filter-display');
+        if (!dropdownElement || !displayElement) return;
+
+        // Ensure all sort modes have default selections
+        if (!selectedValues['key']) selectedValues['key'] = [];
+        if (!selectedValues['folder']) selectedValues['folder'] = [];
+        if (!selectedValues['artist']) selectedValues['artist'] = [];
+
+        let availableValues = [];
+
+        if (currentAllSongsSortMode === 'key') {
+            // Get unique keys
+            const keys = new Set();
+            for (const song of songs) {
+                const key = song.songKey && song.songKey.trim()
+                    ? song.songKey.trim()
+                    : (translations[currentLanguage]['Unknown'] || 'Unknown');
+                keys.add(key);
+            }
+            availableValues = Array.from(keys).sort((a, b) => {
+                const unknownLabel = translations[currentLanguage]['Unknown'] || 'Unknown';
+                if (a === unknownLabel) return 1;
+                if (b === unknownLabel) return -1;
+                return a.localeCompare(b);
+            });
+        } else if (currentAllSongsSortMode === 'folder') {
+            // Get unique folder names
+            const folderNames = new Set();
+            const folderMap = {};
+            for (const folder of folders) {
+                folderMap[folder.id] = folder.name;
+            }
+
+            for (const song of songs) {
+                const songFolders = await SONGS_SERVICE.getSongFolders(song.id);
+                if (songFolders.length === 0) {
+                    folderNames.add(translations[currentLanguage]['Uncategorized'] || 'Uncategorized');
+                } else {
+                    for (const folder of songFolders) {
+                        const folderName = folderMap[folder.id] || folder.name;
+                        folderNames.add(folderName);
+                    }
+                }
+            }
+            availableValues = Array.from(folderNames).sort();
+        } else if (currentAllSongsSortMode === 'artist') {
+            // Get unique artists
+            const artists = new Set();
+            for (const song of songs) {
+                const titleParts = song.title.split(' - ');
+                const artist = titleParts.length > 1 && titleParts[1].trim()
+                    ? titleParts[1].trim()
+                    : (translations[currentLanguage]['Unknown'] || 'Unknown');
+                artists.add(artist);
+            }
+            availableValues = Array.from(artists).sort((a, b) => {
+                const unknownLabel = translations[currentLanguage]['Unknown'] || 'Unknown';
+                if (a === unknownLabel) return 1;
+                if (b === unknownLabel) return -1;
+                return a.localeCompare(b);
+            });
+        }
+
+        // Initialize selected values if not set or empty
+        if (!selectedValues[currentAllSongsSortMode] || selectedValues[currentAllSongsSortMode].length === 0) {
+            selectedValues[currentAllSongsSortMode] = [...availableValues];
+        }
+
+        // Update display text
+        const selectedCount = selectedValues[currentAllSongsSortMode].length;
+        const totalCount = availableValues.length;
+        if (selectedCount === totalCount) {
+            displayElement.textContent = translations[currentLanguage]['All'] || 'All';
+        } else {
+            displayElement.textContent = `${selectedCount} of ${totalCount}`;
+        }
+
+        // Clear existing options
+        dropdownElement.innerHTML = '';
+
+        // Add options with checkboxes
+        availableValues.forEach(value => {
+            const item = document.createElement('div');
+            item.className = 'custom-dropdown-item';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `value-${currentAllSongsSortMode}-${value.replace(/\s+/g, '-').toLowerCase()}`;
+            checkbox.value = value;
+            checkbox.checked = selectedValues[currentAllSongsSortMode].includes(value);
+            checkbox.onchange = () => handleValueCheckboxChange(currentAllSongsSortMode, value, checkbox.checked);
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = value;
+
+            item.appendChild(checkbox);
+            item.appendChild(label);
+            dropdownElement.appendChild(item);
+        });
+    }
+
+    function handleValueCheckboxChange(sortMode, value, isChecked) {
+        if (!selectedValues[sortMode]) {
+            selectedValues[sortMode] = [];
+        }
+
+        if (isChecked) {
+            if (!selectedValues[sortMode].includes(value)) {
+                selectedValues[sortMode].push(value);
+            }
+        } else {
+            selectedValues[sortMode] = selectedValues[sortMode].filter(v => v !== value);
+        }
+
+        // Update display and refresh view
+        updateValueFilterDisplay();
+        refreshAllSongsView();
+    }
+
+    function updateValueFilterDisplay() {
+        const displayElement = document.getElementById('value-filter-display');
+        if (!displayElement) return;
+
+        const selectedCount = selectedValues[currentAllSongsSortMode]?.length || 0;
+        const totalCount = document.querySelectorAll('#value-dropdown .custom-dropdown-item').length;
+
+        if (selectedCount === totalCount) {
+            displayElement.textContent = translations[currentLanguage]['All'] || 'All';
+        } else {
+            displayElement.textContent = `${selectedCount} of ${totalCount}`;
+        }
+    }
+
+    function toggleValueDropdown() {
+        const dropdown = document.getElementById('value-dropdown');
+        const button = document.getElementById('value-filter-btn');
+
+        if (!dropdown || !button) return;
+
+        const isVisible = !dropdown.classList.contains('hidden');
+
+        if (isVisible) {
+            dropdown.classList.add('hidden');
+            button.classList.remove('active');
+        } else {
+            dropdown.classList.remove('hidden');
+            button.classList.add('active');
+        }
+    }
+
     async function renderSongsGroupedByKey(container, songs) {
         // Group songs by key, deduplicating by song id
         const songsByKey = {};
@@ -243,14 +403,18 @@ const SongsManager = (function() {
             return a.localeCompare(b);
         });
         
+        // Filter keys based on selected values
+        const selectedKeys = selectedValues[currentAllSongsSortMode] || sortedKeys;
+        const filteredKeys = sortedKeys.filter(key => selectedKeys.includes(key));
+
         // Render each group
-        for (const key of sortedKeys) {
+        for (const key of filteredKeys) {
             const groupSongs = songsByKey[key];
             const songCount = groupSongs.length;
             const songWord = songCount !== 1
                 ? (translations[currentLanguage]['songs'] || 'songs')
                 : (translations[currentLanguage]['song'] || 'song');
-            
+
             // Create group header
             const groupHeader = document.createElement('div');
             groupHeader.className = 'song-group-header';
@@ -259,7 +423,7 @@ const SongsManager = (function() {
                 <span class="group-count">${songCount} ${songWord}</span>
             `;
             container.appendChild(groupHeader);
-            
+
             // Create songs in this group
             for (const song of groupSongs) {
                 const item = createSongItem(song);
@@ -298,9 +462,13 @@ const SongsManager = (function() {
         
         // Sort folder names alphabetically
         const sortedFolderNames = Object.keys(songsByFolder).sort((a, b) => a.localeCompare(b));
-        
+
+        // Filter folder names based on selected values
+        const selectedFolders = selectedValues[currentAllSongsSortMode] || sortedFolderNames;
+        const filteredFolderNames = sortedFolderNames.filter(name => selectedFolders.includes(name));
+
         // Render each folder group
-        for (const folderName of sortedFolderNames) {
+        for (const folderName of filteredFolderNames) {
             const groupSongs = songsByFolder[folderName];
             const songCount = groupSongs.length;
             const songWord = songCount !== 1
@@ -323,25 +491,29 @@ const SongsManager = (function() {
             }
         }
         
-        // Render uncategorized songs at the end
+        // Render uncategorized songs at the end if selected
         if (uncategorizedSongs.length > 0) {
             const uncategorizedLabel = translations[currentLanguage]['Uncategorized'] || 'Uncategorized';
-            const songCount = uncategorizedSongs.length;
-            const songWord = songCount !== 1
-                ? (translations[currentLanguage]['songs'] || 'songs')
-                : (translations[currentLanguage]['song'] || 'song');
-            
-            const groupHeader = document.createElement('div');
-            groupHeader.className = 'song-group-header';
-            groupHeader.innerHTML = `
-                <h4>${uncategorizedLabel}</h4>
-                <span class="group-count">${songCount} ${songWord}</span>
-            `;
-            container.appendChild(groupHeader);
-            
-            for (const song of uncategorizedSongs) {
-                const item = createSongItem(song);
-                container.appendChild(item);
+            const selectedFolders = selectedValues[currentAllSongsSortMode] || [...sortedFolderNames, uncategorizedLabel];
+
+            if (selectedFolders.includes(uncategorizedLabel)) {
+                const songCount = uncategorizedSongs.length;
+                const songWord = songCount !== 1
+                    ? (translations[currentLanguage]['songs'] || 'songs')
+                    : (translations[currentLanguage]['song'] || 'song');
+
+                const groupHeader = document.createElement('div');
+                groupHeader.className = 'song-group-header';
+                groupHeader.innerHTML = `
+                    <h4>${uncategorizedLabel}</h4>
+                    <span class="group-count">${songCount} ${songWord}</span>
+                `;
+                container.appendChild(groupHeader);
+
+                for (const song of uncategorizedSongs) {
+                    const item = createSongItem(song);
+                    container.appendChild(item);
+                }
             }
         }
     }
@@ -375,8 +547,12 @@ const SongsManager = (function() {
             return a.localeCompare(b);
         });
 
+        // Filter artists based on selected values
+        const selectedArtists = selectedValues[currentAllSongsSortMode] || sortedArtists;
+        const filteredArtists = sortedArtists.filter(artist => selectedArtists.includes(artist));
+
         // Render each group
-        for (const artist of sortedArtists) {
+        for (const artist of filteredArtists) {
             const groupSongs = songsByArtist[artist];
             const songCount = groupSongs.length;
             const songWord = songCount !== 1
@@ -496,6 +672,17 @@ const SongsManager = (function() {
         currentAllSongsSortMode = sortMode;
         refreshAllSongsView();
     }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('value-dropdown');
+        const button = document.getElementById('value-filter-btn');
+
+        if (dropdown && button && !button.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+            button.classList.remove('active');
+        }
+    });
     
     document.addEventListener('DOMContentLoaded', initialize);
     
@@ -513,6 +700,7 @@ const SongsManager = (function() {
         refreshFoldersList,
         refreshSongsList,
         refreshAllSongsView,
-        handleAllSongsSortChange
+        handleAllSongsSortChange,
+        toggleValueDropdown
     };
 })();
