@@ -105,6 +105,7 @@ const translations = {
                         'Uncategorized': 'Uncategorized',
                         'Key': 'Key',
                         'Folder': 'Folder',
+                        'Artist': 'Artist',
                     },
                     es: {
                         'Gen Song Chords': 'Generar Acordes',
@@ -222,6 +223,7 @@ const translations = {
                         'Uncategorized': 'Sin categoría',
                         'Key': 'Tonalidad',
                         'Folder': 'Carpeta',
+                        'Artist': 'Artista',
                     }};
 
 let currentLanguage = localStorage.getItem('language') || 'es';

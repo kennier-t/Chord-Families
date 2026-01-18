@@ -209,6 +209,8 @@ const SongsManager = (function() {
             await renderSongsGroupedByKey(container, allSongs);
         } else if (currentAllSongsSortMode === 'folder') {
             await renderSongsGroupedByFolder(container, allSongs, folders);
+        } else if (currentAllSongsSortMode === 'artist') {
+            await renderSongsGroupedByArtist(container, allSongs);
         }
         
         translatePage();
@@ -343,7 +345,61 @@ const SongsManager = (function() {
             }
         }
     }
-    
+
+    async function renderSongsGroupedByArtist(container, songs) {
+        // Group songs by artist, deduplicating by song id
+        const songsByArtist = {};
+        const seenIds = new Set();
+
+        for (const song of songs) {
+            if (seenIds.has(song.id)) continue;
+            seenIds.add(song.id);
+
+            // Extract artist from title: "Song Name - Artist"
+            const titleParts = song.title.split(' - ');
+            const artist = titleParts.length > 1 && titleParts[1].trim()
+                ? titleParts[1].trim()
+                : (translations[currentLanguage]['Unknown'] || 'Unknown');
+
+            if (!songsByArtist[artist]) {
+                songsByArtist[artist] = [];
+            }
+            songsByArtist[artist].push(song);
+        }
+
+        // Sort artists alphabetically, but put "Unknown" at the end
+        const unknownLabel = translations[currentLanguage]['Unknown'] || 'Unknown';
+        const sortedArtists = Object.keys(songsByArtist).sort((a, b) => {
+            if (a === unknownLabel) return 1;
+            if (b === unknownLabel) return -1;
+            return a.localeCompare(b);
+        });
+
+        // Render each group
+        for (const artist of sortedArtists) {
+            const groupSongs = songsByArtist[artist];
+            const songCount = groupSongs.length;
+            const songWord = songCount !== 1
+                ? (translations[currentLanguage]['songs'] || 'songs')
+                : (translations[currentLanguage]['song'] || 'song');
+
+            // Create group header
+            const groupHeader = document.createElement('div');
+            groupHeader.className = 'song-group-header';
+            groupHeader.innerHTML = `
+                <h4>${artist}</h4>
+                <span class="group-count">${songCount} ${songWord}</span>
+            `;
+            container.appendChild(groupHeader);
+
+            // Create songs in this group
+            for (const song of groupSongs) {
+                const item = createSongItem(song);
+                container.appendChild(item);
+            }
+        }
+    }
+
     function createSongItem(song) {
         const item = document.createElement('div');
         item.className = 'song-item';
