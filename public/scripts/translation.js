@@ -100,6 +100,11 @@ const translations = {
                         'Ready': 'Ready',
                         'song': 'song',
                         'songs': 'songs',
+                        'All': 'All',
+                        'Unknown': 'Unknown',
+                        'Uncategorized': 'Uncategorized',
+                        'Key': 'Key',
+                        'Folder': 'Folder',
                     },
                     es: {
                         'Gen Song Chords': 'Generar Acordes',
@@ -212,6 +217,11 @@ const translations = {
                         'Error saving song: ': 'Error guardando canción: ',
                         'song': 'canción',
                         'songs': 'canciones',
+                        'All': 'Todas',
+                        'Unknown': 'Desconocida',
+                        'Uncategorized': 'Sin categoría',
+                        'Key': 'Tonalidad',
+                        'Folder': 'Carpeta',
                     }};
 
 let currentLanguage = localStorage.getItem('language') || 'es';

@@ -216,7 +216,16 @@
                 <!-- Songs List View -->
                 <div id="songs-list-view" class="hidden">
                     <button id="back-to-folders-btn" class="back-btn" data-translate="Back to Folders">← Back to Folders</button>
-                    <h3 id="folder-title"></h3>
+                    <div class="songs-list-header">
+                        <h3 id="folder-title"></h3>
+                        <div id="all-songs-sort-control" class="sort-control hidden">
+                            <label for="all-songs-sort-select" data-translate="Sort by:">Sort by:</label>
+                            <select id="all-songs-sort-select" onchange="SongsManager.handleAllSongsSortChange(this.value)">
+                                <option value="key" data-translate="Key">Key</option>
+                                <option value="folder" data-translate="Folder">Folder</option>
+                            </select>
+                        </div>
+                    </div>
                     <div id="songs-list" class="songs-list"></div>
                 </div>
             </div>
