@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF → Text</title>
+    <link rel="icon" type="image/webp" href="assets/guitar.webp">
+    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/pdf-to-text.css">
+</head>
+<body>
+    <div id="app">
+        <div class="pdf-view view">
+            <div class="top-buttons-container">
+                <button id="back-btn" class="utility-btn">← Back</button>
+            </div>
+            
+            <h1>PDF → Text</h1>
+            
+            <div class="pdf-container">
+                <!-- Columna izquierda: drag & drop -->
+                <div class="pdf-left">
+                    <h2>Select PDF</h2>
+                    
+                    <div id="dropZone" class="drop-zone" tabindex="0">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden style="opacity:0.85">
+                            <path d="M12 3v10" stroke="#8B6F47" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="#8B6F47" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7 10l5-5 5 5" stroke="#8B6F47" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p><strong>Drag & drop</strong> your PDF here<br/><span class="small">or click to select</span></p>
+                    </div>
+
+                    <div class="file-info">
+                        <div class="filename" id="filename">No file selected</div>
+                    </div>
+
+                    <button id="convertBtn" class="utility-btn convert-btn" disabled>Convert</button>
+
+                    <div class="small info-text">Preserves formatting and spacing using pdftotext -layout</div>
+
+                    <input id="fileInput" type="file" accept="application/pdf" style="display:none" />
+                </div>
+
+                <!-- Columna derecha: resultado -->
+                <div class="pdf-right">
+                    <h2>Converted Text</h2>
+                    <textarea id="result" readonly placeholder="Converted text will appear here..."></textarea>
+                    <div class="controls">
+                        <button id="copyBtn" class="utility-btn copy-btn">Copy</button>
+                        <button id="clearBtn" class="utility-btn clear-btn">Clear</button>
+                        <div class="status" id="status">Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/pdf-to-text.js"></script>
+</body>
+</html>

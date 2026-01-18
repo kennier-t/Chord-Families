@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeFamilyButtons();
     initializeBackButtons();
     initializeDownloadButtons();
+    initializeUtilityButtons();
 });
 
 // Inicializar botones de familias
@@ -201,4 +202,14 @@ function downloadBlob(blob, filename) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+// Inicializar botones de utilidad
+function initializeUtilityButtons() {
+    const pdfToTextBtn = document.getElementById('pdf-to-text-btn');
+    if (pdfToTextBtn) {
+        pdfToTextBtn.addEventListener('click', () => {
+            window.open('pdf-to-text.html', '_blank');
+        });
+    }
 }

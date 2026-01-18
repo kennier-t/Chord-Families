@@ -139,6 +139,14 @@ h2::after {
     margin-left: auto;
 }
 
+.bottom-buttons-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 32px;
+    gap: 16px;
+}
+
 .utility-btn {
     padding: 12px 24px;
     background: var(--primary);
