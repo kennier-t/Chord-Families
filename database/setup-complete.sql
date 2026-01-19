@@ -108,6 +108,7 @@ CREATE TABLE Songs (
     BPM NVARCHAR(20) NULL,
     Effects NVARCHAR(200) NULL,
     ContentText NVARCHAR(MAX) NOT NULL,
+    SongContentFontSizePt DECIMAL(5,2) NULL,
     CreatedDate DATETIME2 DEFAULT GETDATE(),
     ModifiedDate DATETIME2 DEFAULT GETDATE()
 );
