@@ -504,8 +504,9 @@ app.delete('/api/folders/:id', async (req, res) => {
 app.get('/api/songs', async (req, res) => {
     try {
         const result = await pool.request().query(`
-            SELECT Id as id, Title as title, SongDate as songDate, Notes as notes, 
+            SELECT Id as id, Title as title, SongDate as songDate, Notes as notes,
                    SongKey as songKey, Capo as capo, BPM as bpm, Effects as effects,
+                   SongContentFontSizePt as songContentFontSizePt,
                    ContentText as contentText, CreatedDate as createdDate, ModifiedDate as modifiedDate
             FROM Songs ORDER BY Title
         `);
@@ -526,6 +527,7 @@ app.get('/api/songs/:id', async (req, res) => {
             .query(`
                 SELECT Id as id, Title as title, SongDate as songDate, Notes as notes,
                        SongKey as songKey, Capo as capo, BPM as bpm, Effects as effects,
+                       SongContentFontSizePt as songContentFontSizePt,
                        ContentText as contentText, CreatedDate as createdDate, ModifiedDate as modifiedDate
                 FROM Songs WHERE Id = @id
             `);
@@ -606,8 +608,16 @@ app.get('/api/songs/:songId/folders', async (req, res) => {
 // POST create song
 app.post('/api/songs', async (req, res) => {
     try {
-        const { title, songDate, notes, songKey, capo, bpm, effects, contentText, chordIds, folderIds } = req.body;
-        
+        const { title, songDate, notes, songKey, capo, bpm, effects, songContentFontSizePt, contentText, chordIds, folderIds } = req.body;
+
+        // Validate font size if provided
+        if (songContentFontSizePt) {
+            const fontSize = parseFloat(songContentFontSizePt);
+            if (isNaN(fontSize) || fontSize < 6 || fontSize > 72) {
+                return res.status(400).json({ error: 'Font size must be between 6 and 72 pt' });
+            }
+        }
+
         const transaction = new sql.Transaction(pool);
         await transaction.begin();
         
@@ -621,11 +631,12 @@ app.post('/api/songs', async (req, res) => {
                 .input('capo', sql.NVarChar, capo || '')
                 .input('bpm', sql.NVarChar, bpm || '')
                 .input('effects', sql.NVarChar, effects || '')
+                .input('songContentFontSizePt', sql.Float, songContentFontSizePt ? parseFloat(songContentFontSizePt) : null)
                 .input('contentText', sql.NVarChar, normalizeText(contentText))
                 .query(`
-                    INSERT INTO Songs (Title, SongDate, Notes, SongKey, Capo, BPM, Effects, ContentText)
+                    INSERT INTO Songs (Title, SongDate, Notes, SongKey, Capo, BPM, Effects, SongContentFontSizePt, ContentText)
                     OUTPUT INSERTED.Id
-                    VALUES (@title, @songDate, @notes, @songKey, @capo, @bpm, @effects, @contentText)
+                    VALUES (@title, @songDate, @notes, @songKey, @capo, @bpm, @effects, @songContentFontSizePt, @contentText)
                 `);
             
             const songId = songResult.recordset[0].Id;
@@ -668,8 +679,16 @@ app.post('/api/songs', async (req, res) => {
 app.put('/api/songs/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, songDate, notes, songKey, capo, bpm, effects, contentText, chordIds, folderIds } = req.body;
-        
+        const { title, songDate, notes, songKey, capo, bpm, effects, songContentFontSizePt, contentText, chordIds, folderIds } = req.body;
+
+        // Validate font size if provided
+        if (songContentFontSizePt) {
+            const fontSize = parseFloat(songContentFontSizePt);
+            if (isNaN(fontSize) || fontSize < 6 || fontSize > 72) {
+                return res.status(400).json({ error: 'Font size must be between 6 and 72 pt' });
+            }
+        }
+
         const transaction = new sql.Transaction(pool);
         await transaction.begin();
         
@@ -684,12 +703,13 @@ app.put('/api/songs/:id', async (req, res) => {
                 .input('capo', sql.NVarChar, capo || '')
                 .input('bpm', sql.NVarChar, bpm || '')
                 .input('effects', sql.NVarChar, effects || '')
+                .input('songContentFontSizePt', sql.Float, songContentFontSizePt ? parseFloat(songContentFontSizePt) : null)
                 .input('contentText', sql.NVarChar, normalizeText(contentText))
                 .query(`
-                    UPDATE Songs 
+                    UPDATE Songs
                     SET Title = @title, SongDate = @songDate, Notes = @notes,
-                        SongKey = @songKey, Capo = @capo, BPM = @bpm, 
-                        Effects = @effects, ContentText = @contentText, ModifiedDate = GETDATE()
+                        SongKey = @songKey, Capo = @capo, BPM = @bpm,
+                        Effects = @effects, SongContentFontSizePt = @songContentFontSizePt, ContentText = @contentText, ModifiedDate = GETDATE()
                     WHERE Id = @id
                 `);
             

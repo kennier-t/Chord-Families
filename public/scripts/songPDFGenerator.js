@@ -111,10 +111,11 @@ const SongPDFGenerator = (function() {
         doc.text(effectsLines.slice(0, 2), tableX + col2_1Width + col2_2Width + col2_3Width + 2 + doc.getTextWidth('Effects: '), currentY);
         
         yPosition += row2Height + 8;
-        
-        // Use Courier font for lyrics, size 14px
+
+        // Use Courier font for lyrics, with per-song font size or default
         doc.setFont('courier', 'normal');
-        doc.setFontSize(11);
+        const contentFontSize = song.songContentFontSizePt ? parseFloat(song.songContentFontSizePt) : 11;
+        doc.setFontSize(contentFontSize);
         
         const lyricsMargin = 12;
         const maxLineWidth = pageWidth - (lyricsMargin * 2);

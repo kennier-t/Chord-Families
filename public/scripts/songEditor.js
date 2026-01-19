@@ -151,6 +151,7 @@ const SongEditor = (function() {
             document.getElementById('song-capo-input').value = song.capo;
             document.getElementById('song-bpm-input').value = song.bpm;
             document.getElementById('song-effects-input').value = song.effects;
+            document.getElementById('song-content-font-size-input').value = song.songContentFontSizePt || '';
             document.getElementById('song-content-textarea').value = song.contentText;
             
             selectedChordIds = await SONGS_SERVICE.getSongChordDiagrams(songId);
@@ -169,6 +170,7 @@ const SongEditor = (function() {
             document.getElementById('song-capo-input').value = '';
             document.getElementById('song-bpm-input').value = '';
             document.getElementById('song-effects-input').value = '';
+            document.getElementById('song-content-font-size-input').value = '';
             document.getElementById('song-content-textarea').value = '';
             
             document.querySelectorAll('.folder-checkbox').forEach(cb => {
@@ -501,9 +503,15 @@ const SongEditor = (function() {
         }
         
         const contentText = document.getElementById('song-content-textarea').value;
-        
+
         if (!contentText.trim()) {
             alert(translations[currentLanguage]['Song content cannot be empty'] || 'Song content cannot be empty');
+            return;
+        }
+
+        const fontSizeValue = document.getElementById('song-content-font-size-input').value.trim();
+        if (fontSizeValue && (parseFloat(fontSizeValue) < 6 || parseFloat(fontSizeValue) > 72)) {
+            alert(translations[currentLanguage]['Font size must be between 6 and 72 pt'] || 'Font size must be between 6 and 72 pt');
             return;
         }
         
@@ -517,6 +525,7 @@ const SongEditor = (function() {
             capo: document.getElementById('song-capo-input').value.trim(),
             bpm: document.getElementById('song-bpm-input').value.trim(),
             effects: document.getElementById('song-effects-input').value.trim(),
+            songContentFontSizePt: document.getElementById('song-content-font-size-input').value.trim(),
             contentText: contentText,
             chordIds: selectedChordIds,
             folderIds: selectedFolders
