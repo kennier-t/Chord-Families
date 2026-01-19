@@ -30,6 +30,12 @@ const SongEditor = (function() {
         if (columnGuidesSelect) {
             columnGuidesSelect.addEventListener('change', updateColumnGuides);
         }
+
+        // Font size control
+        const fontSizeInput = document.getElementById('song-content-font-size-input');
+        if (fontSizeInput) {
+            fontSizeInput.addEventListener('input', updateContentFontSize);
+        }
         
         // Update guides on window resize
         window.addEventListener('resize', () => {
@@ -88,6 +94,19 @@ const SongEditor = (function() {
         }
     }
     
+    function updateContentFontSize() {
+        const fontSizeInput = document.getElementById('song-content-font-size-input');
+        const textarea = document.getElementById('song-content-textarea');
+        if (fontSizeInput && textarea) {
+            const fontSize = fontSizeInput.value.trim();
+            if (fontSize && !isNaN(parseFloat(fontSize)) && parseFloat(fontSize) >= 6 && parseFloat(fontSize) <= 72) {
+                textarea.style.fontSize = fontSize + 'pt';
+            } else {
+                textarea.style.fontSize = '11pt'; // default
+            }
+        }
+    }
+
     function startDraggingLine(e) {
         isDraggingLine = true;
         document.body.style.userSelect = 'none';
@@ -153,6 +172,9 @@ const SongEditor = (function() {
             document.getElementById('song-effects-input').value = song.effects;
             document.getElementById('song-content-font-size-input').value = song.songContentFontSizePt || '';
             document.getElementById('song-content-textarea').value = song.contentText;
+
+            // Set textarea font size
+            updateContentFontSize();
             
             selectedChordIds = await SONGS_SERVICE.getSongChordDiagrams(songId);
             await updateSelectedChordsList();
@@ -172,6 +194,9 @@ const SongEditor = (function() {
             document.getElementById('song-effects-input').value = '';
             document.getElementById('song-content-font-size-input').value = '';
             document.getElementById('song-content-textarea').value = '';
+
+            // Set textarea font size to default
+            updateContentFontSize();
             
             document.querySelectorAll('.folder-checkbox').forEach(cb => {
                 cb.checked = false;

@@ -1311,7 +1311,7 @@ h2::after {
     padding: 12px;
     border: 1px solid var(--border);
     font-family: "Courier New", Courier, monospace;
-    font-size: 14px;
+    font-size: 11pt;
     line-height: 1.5;
     resize: vertical;
     position: relative;
