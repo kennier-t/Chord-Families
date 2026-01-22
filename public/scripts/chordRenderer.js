@@ -47,13 +47,17 @@ class ChordRenderer {
         const iconMargin = 2;
         const x = this.width - iconSize - iconMargin;
         const y = iconMargin;
-        
+
         return `
-            <g class="variation-icon" style="cursor: pointer;" onclick="SongEditor.openVariationModal('${this.chord.name}')">
-                <rect x="${x}" y="${y}" width="${iconSize}" height="${iconSize}" rx="3" fill="#f0f0f0" stroke="#ccc" stroke-width="1"/>
-                <path d="M ${x + 9} ${y + 5} L ${x + 9} ${y + 13}" stroke="#333" stroke-width="2" stroke-linecap="round"/>
-                <path d="M ${x + 5} ${y + 9} L ${x + 13} ${y + 9}" stroke="#333" stroke-width="2" stroke-linecap="round"/>
-            </g>
+            <foreignObject x="${x}" y="${y}" width="${iconSize}" height="${iconSize}">
+                <button class="variation-icon-trigger" data-chord-id="${this.chord.id}" data-chord-name="${this.chord.name}" aria-label="Choose variation" style="width: 100%; height: 100%; border: none; background: none; padding: 0; cursor: pointer;">
+                    <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 ${iconSize} ${iconSize}">
+                        <rect x="0" y="0" width="${iconSize}" height="${iconSize}" rx="3" fill="#f0f0f0" stroke="#ccc" stroke-width="1"/>
+                        <path d="M 9 5 L 9 13" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M 5 9 L 13 9" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </foreignObject>
         `;
     }
 

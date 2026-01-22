@@ -70,10 +70,71 @@ const SongEditor = (function() {
     }
 
     function closeVariationModal() {
-        if (variationModal) variationModal.classList.add('hidden');
+        if (variationModal) {
+            variationModal.classList.add('hidden');
+            variationModal.style.zIndex = '';
+        }
         selectedVariationId = null;
         if (variationGrid) variationGrid.innerHTML = '';
     }
+
+    // Reusable function to open variations modal
+    async function openVariationsModal(chordIdOrName, onAdd) {
+        if (!variationModal || !variationGrid) {
+            console.error('Variation modal elements not found.');
+            return;
+        }
+
+        document.getElementById('variation-modal-title').textContent = `Variations for ${chordIdOrName}`;
+
+        const variations = await DB_SERVICE.getChordVariations(chordIdOrName);
+        variationGrid.innerHTML = '';
+        selectedVariationId = null;
+
+        if (variations.length === 0) {
+            variationGrid.innerHTML = '<p>No variations found.</p>';
+        } else {
+            variations.forEach(variation => {
+                const item = document.createElement('div');
+                item.className = 'variation-item';
+                if (variation.isDefault) item.classList.add('is-default');
+                item.dataset.chordId = variation.id;
+
+                const title = document.createElement('h4');
+                title.textContent = variation.name;
+
+                const renderer = new ChordRenderer(variation);
+                item.appendChild(title);
+                item.innerHTML += renderer.getSVGString(false);
+
+                item.addEventListener('click', () => {
+                    const currentSelected = variationGrid.querySelector('.selected');
+                    if (currentSelected) currentSelected.classList.remove('selected');
+                    item.classList.add('selected');
+                    selectedVariationId = variation.id;
+                });
+                variationGrid.appendChild(item);
+            });
+        }
+
+        // Make modal accessible
+        variationModal.setAttribute('role', 'dialog');
+        variationModal.setAttribute('aria-modal', 'true');
+
+        // Ensure modal is on top
+        variationModal.style.zIndex = '9999';
+
+        variationModal.classList.remove('hidden');
+
+        // Override add button for this instance
+        const addBtn = document.getElementById('add-variation-btn');
+        addBtn.onclick = () => {
+            if (selectedVariationId) {
+                onAdd(selectedVariationId);
+            }
+            closeVariationModal();
+        };
+    };
     
     async function populateChordSelector() {
         const container = document.getElementById('chord-selector-grid');
@@ -111,46 +172,9 @@ const SongEditor = (function() {
                 variationBtn.title = 'Choose variation';
                 variationBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>`;
                 
-                variationBtn.addEventListener('click', async (e) => {
+                variationBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    
-                    if (!variationModal || !variationGrid) {
-                        console.error('Variation modal elements not found.');
-                        return;
-                    }
-
-                    document.getElementById('variation-modal-title').textContent = `Variations for ${chordName}`;
-                    
-                    const variations = await DB_SERVICE.getChordVariations(chordName);
-                    variationGrid.innerHTML = '';
-                    selectedVariationId = null;
-
-                    if (variations.length === 0) {
-                        variationGrid.innerHTML = '<p>No variations found.</p>';
-                    } else {
-                        variations.forEach(variation => {
-                            const item = document.createElement('div');
-                            item.className = 'variation-item';
-                            if (variation.isDefault) item.classList.add('is-default');
-                            item.dataset.chordId = variation.id;
-
-                            const title = document.createElement('h4');
-                            title.textContent = variation.name;
-
-                            const renderer = new ChordRenderer(variation);
-                            item.appendChild(title);
-                            item.innerHTML += renderer.getSVGString(false);
-
-                            item.addEventListener('click', () => {
-                                const currentSelected = variationGrid.querySelector('.selected');
-                                if (currentSelected) currentSelected.classList.remove('selected');
-                                item.classList.add('selected');
-                                selectedVariationId = variation.id;
-                            });
-                            variationGrid.appendChild(item);
-                        });
-                    }
-                    variationModal.classList.remove('hidden');
+                    SongEditor.openVariationsModal(chordName, (id) => addChordToSelection(id));
                 });
                 item.appendChild(variationBtn);
             }
@@ -533,7 +557,11 @@ const SongEditor = (function() {
         removeChordFromSelection,
         moveChordUp,
         moveChordDown,
-        saveSong
+        saveSong,
+        openVariationsModal
     };
 })();
+
+// Make SongEditor globally available
+window.SongEditor = SongEditor;
 

@@ -13,7 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeBackButtons();
     initializeDownloadButtons();
     initializeUtilityButtons();
+    initializeVariationIconHandler();
 });
+
+// Initialize variation icon click handler
+function initializeVariationIconHandler() {
+    document.addEventListener('click', async (e) => {
+        const trigger = e.target.closest('.variation-icon-trigger');
+        if (trigger) {
+            e.stopPropagation();
+            const chordName = trigger.dataset.chordName;
+            SongEditor.openVariationsModal(chordName, async (id) => {
+                const chord = await DB_SERVICE.getChordById(id);
+                showChordView(chord);
+            });
+        }
+    });
+}
 
 // Initialize family buttons
 function initializeFamilyButtons() {
@@ -83,44 +99,58 @@ async function showFamilyView(family) {
     console.log('showFamilyView called with:', family);
     currentFamily = family;
     const chords = await DB_SERVICE.getChordsForFamily(family);
-    
+
     if (chords.length === 0) {
         alert(`Family ${family} is not yet implemented.`);
         return;
     }
 
     document.getElementById('family-title').textContent = translations[currentLanguage][`${family} Family`] || `${family} Family`;
-    
+
+    // Create variation count map
+    const variationCount = {};
+    chords.forEach(chord => {
+        variationCount[chord.name] = (variationCount[chord.name] || 0) + 1;
+    });
+
     // Render chord gallery
     const gallery = document.getElementById('chords-gallery');
     gallery.innerHTML = '';
-    
+
     chords.forEach(chord => {
-        const card = createChordCard(chord);
+        const hasVariations = variationCount[chord.name] > 1;
+        const card = createChordCard(chord, hasVariations);
         gallery.appendChild(card);
     });
-    
+
     showView('family');
 }
 
 
 // Create chord card for gallery
-function createChordCard(chord) {
+function createChordCard(chord, hasVariations) {
     const card = document.createElement('div');
     card.className = 'chord-card';
     card.addEventListener('click', () => showChordView(chord));
-    
+
     const title = document.createElement('h3');
     title.textContent = chord.name;
     card.appendChild(title);
-    
+
     // Render thumbnail
     const renderer = new ChordRenderer(chord);
-    const img = document.createElement('img');
-    img.className = 'chord-thumbnail';
-    img.src = renderer.getDataURL('svg', false);
-    card.appendChild(img);
-    
+    if (hasVariations) {
+        const div = document.createElement('div');
+        div.className = 'chord-thumbnail';
+        div.innerHTML = renderer.getSVGString(false, true);
+        card.appendChild(div);
+    } else {
+        const img = document.createElement('img');
+        img.className = 'chord-thumbnail';
+        img.src = renderer.getDataURL('svg', false);
+        card.appendChild(img);
+    }
+
     return card;
 }
 
