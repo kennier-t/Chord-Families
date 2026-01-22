@@ -1487,6 +1487,20 @@ h2::after {
     cursor: pointer;
 }
 
+.checkbox-form-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.is-default-checkbox {
+    cursor: pointer;
+}
+
+.is-default-checkbox:checked {
+    accent-color: var(--primary);
+}
+
 .song-editor-actions {
     display: flex;
     gap: 12px;
