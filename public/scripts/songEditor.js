@@ -112,6 +112,7 @@ const SongEditor = (function() {
                     if (currentSelected) currentSelected.classList.remove('selected');
                     item.classList.add('selected');
                     selectedVariationId = variation.id;
+                    updateMakeDefaultBtn();
                 });
                 variationGrid.appendChild(item);
             });
@@ -134,6 +135,43 @@ const SongEditor = (function() {
             }
             closeVariationModal();
         };
+
+        // Function to update button state
+        const updateMakeDefaultBtn = () => {
+            const makeDefaultBtn = document.getElementById('make-default-btn');
+            if (makeDefaultBtn && selectedVariationId) {
+                const variations = variationGrid.querySelectorAll('.variation-item');
+                const selectedItem = Array.from(variations).find(item => item.dataset.chordId == selectedVariationId);
+                const isDefault = selectedItem && selectedItem.classList.contains('is-default');
+                makeDefaultBtn.disabled = isDefault;
+                makeDefaultBtn.textContent = isDefault ? 'Already default' : 'Make default';
+            }
+        };
+
+        // Add or update make default button
+        let makeDefaultBtn = document.getElementById('make-default-btn');
+        if (!makeDefaultBtn) {
+            makeDefaultBtn = document.createElement('button');
+            makeDefaultBtn.id = 'make-default-btn';
+            makeDefaultBtn.textContent = 'Make default';
+            makeDefaultBtn.className = 'btn';
+            addBtn.parentNode.insertBefore(makeDefaultBtn, addBtn);
+        }
+
+        makeDefaultBtn.onclick = async () => {
+            if (selectedVariationId) {
+                const variations = await DB_SERVICE.getChordVariations(chordIdOrName);
+                const selected = variations.find(v => v.id === selectedVariationId);
+                if (selected && !selected.isDefault) {
+                    await DB_SERVICE.setDefaultVariation(selectedVariationId);
+                    alert('Default variation updated successfully');
+                    closeVariationModal();
+                }
+            }
+        };
+
+        // Initially update
+        updateMakeDefaultBtn();
     };
     
     async function populateChordSelector() {

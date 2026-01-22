@@ -464,24 +464,57 @@ app.put('/api/chords/:id', async (req, res) => {
 app.delete('/api/chords/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        
+
         const chord = await pool.request()
             .input('id', sql.Int, id)
             .query('SELECT IsOriginal FROM Chords WHERE Id = @id');
-        
+
         if (chord.recordset.length === 0) {
             return res.status(404).json({ error: 'Chord not found' });
         }
-        
+
         if (chord.recordset[0].IsOriginal) {
             return res.status(403).json({ error: 'Cannot delete original chords' });
         }
-        
+
         await pool.request()
             .input('id', sql.Int, id)
             .query('DELETE FROM Chords WHERE Id = @id');
-        
+
         res.json({ message: 'Chord deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// PUT set chord as default variation
+app.put('/api/chords/:id/set-default', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Get the chord name
+        const chord = await pool.request()
+            .input('id', sql.Int, id)
+            .query('SELECT Name FROM Chords WHERE Id = @id');
+
+        if (chord.recordset.length === 0) {
+            return res.status(404).json({ error: 'Chord not found' });
+        }
+
+        const chordName = chord.recordset[0].Name;
+
+        // Unset default for all variations of this name
+        await pool.request()
+            .input('name', sql.NVarChar, chordName)
+            .query('UPDATE Chords SET IsDefault = 0 WHERE Name = @name');
+
+        // Set this chord as default
+        await pool.request()
+            .input('id', sql.Int, id)
+            .query('UPDATE Chords SET IsDefault = 1 WHERE Id = @id');
+
+        res.json({ message: 'Default variation updated successfully' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });

@@ -98,9 +98,15 @@ const DB_SERVICE = (function() {
         await apiCall(`/chords/${chordId}`, {
             method: 'DELETE'
         });
-        return true;
     }
-    
+
+    // Set a chord variation as the default for its name
+    async function setDefaultVariation(chordId) {
+        await apiCall(`/chords/${chordId}/set-default`, {
+            method: 'PUT'
+        });
+    }
+
     // Public API
     return {
         initialize,
@@ -112,7 +118,8 @@ const DB_SERVICE = (function() {
         getChordVariations,
         createChord,
         updateChord,
-        deleteChord
+        deleteChord,
+        setDefaultVariation
     };
 })();
 
