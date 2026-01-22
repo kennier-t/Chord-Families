@@ -183,6 +183,9 @@ const SongEditor = (function() {
     }
     
     function addChordToSelection(chordId) {
+        if (selectedChordIds.includes(chordId)) {
+            return; // Silently ignore duplicates
+        }
         if (selectedChordIds.length >= 8) {
             alert(translations[currentLanguage]['Maximum 8 chords allowed'] || 'Maximum 8 chords allowed');
             return;
