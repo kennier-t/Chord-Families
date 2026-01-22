@@ -469,6 +469,10 @@ h2::after {
     animation: slideUp 0.3s ease-out;
 }
 
+.variation-modal-content {
+    max-width: 800px;
+}
+
 @keyframes slideUp {
     from {
         transform: translateY(20px);
@@ -599,6 +603,7 @@ h2::after {
 .modal-actions {
     display: flex;
     justify-content: center;
+    gap: 12px;
     margin-bottom: 24px;
 }
 
@@ -1508,6 +1513,7 @@ h2::after {
     align-items: center;
     justify-content: center;
     min-width: 120px;
+    white-space: nowrap;
 }
 
 .editor-action-btn::before {
@@ -1625,8 +1631,9 @@ h2::after {
 
 /* Chord Variation UI */
 .variation-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 16px;
     margin-top: 24px;
     margin-bottom: 24px;
@@ -1642,6 +1649,10 @@ h2::after {
     transition: all 0.3s ease;
     background: var(--bg-card);
     box-shadow: var(--shadow-sm);
+}
+
+.variation-item h4 {
+    text-align: center;
 }
 
 .variation-item:hover {

@@ -73,6 +73,7 @@ const SongEditor = (function() {
         if (variationModal) {
             variationModal.classList.add('hidden');
             variationModal.style.zIndex = '';
+            variationModal.querySelector('.modal-content').classList.remove('variation-modal-content');
         }
         selectedVariationId = null;
         if (variationGrid) variationGrid.innerHTML = '';
@@ -84,6 +85,9 @@ const SongEditor = (function() {
             console.error('Variation modal elements not found.');
             return;
         }
+
+        // Allow wider modal for buttons
+        variationModal.querySelector('.modal-content').classList.add('variation-modal-content');
 
         document.getElementById('variation-modal-title').textContent = `Variations for ${chordIdOrName}`;
 
@@ -144,7 +148,13 @@ const SongEditor = (function() {
                 const selectedItem = Array.from(variations).find(item => item.dataset.chordId == selectedVariationId);
                 const isDefault = selectedItem && selectedItem.classList.contains('is-default');
                 makeDefaultBtn.disabled = isDefault;
-                makeDefaultBtn.textContent = isDefault ? 'Already default' : 'Make default';
+                if (isDefault) {
+                    makeDefaultBtn.className = 'editor-action-btn btn-secondary';
+                    makeDefaultBtn.textContent = 'Already Default';
+                } else {
+                    makeDefaultBtn.className = 'editor-action-btn btn-primary';
+                    makeDefaultBtn.textContent = 'Make Default';
+                }
             }
         };
 
@@ -153,8 +163,8 @@ const SongEditor = (function() {
         if (!makeDefaultBtn) {
             makeDefaultBtn = document.createElement('button');
             makeDefaultBtn.id = 'make-default-btn';
-            makeDefaultBtn.textContent = 'Make default';
-            makeDefaultBtn.className = 'btn';
+            makeDefaultBtn.textContent = 'Make Default';
+            makeDefaultBtn.className = 'editor-action-btn btn-primary';
             addBtn.parentNode.insertBefore(makeDefaultBtn, addBtn);
         }
 
