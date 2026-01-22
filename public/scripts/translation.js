@@ -110,6 +110,13 @@ const translations = {
                         'Visible Folders:': 'Visible Folders:',
                         'Visible Artists:': 'Visible Artists:',
                         'Visible': 'Visible',
+                        'Choose Variation': 'Choose Variation',
+                        'Add Variation': 'Add Variation',
+                        'Make Default': 'Make Default',
+                        'Already Default': 'Already Default',
+                        'Set as Default': 'Set as Default',
+                        'Default variation updated successfully': 'Default variation updated successfully',
+                        'Variations for': 'Variations for',
                     },
                     es: {
                         'Gen Song Chords': 'Generar Acordes',
@@ -232,6 +239,13 @@ const translations = {
                         'Visible Folders:': 'Carpetas Visibles:',
                         'Visible Artists:': 'Artistas Visibles:',
                         'Visible': 'Visibles',
+                        'Choose Variation': 'Elegir Variación',
+                        'Add Variation': 'Agregar Variación',
+                        'Make Default': 'Hacer Predeterminado',
+                        'Already Default': 'Ya Predeterminado',
+                        'Set as Default': 'Establecer como Predeterminado',
+                        'Default variation updated successfully': 'Variación predeterminada actualizada exitosamente',
+                        'Variations for': 'Variaciones para',
                     }};
 
 let currentLanguage = localStorage.getItem('language') || 'es';

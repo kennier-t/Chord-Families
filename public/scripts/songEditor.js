@@ -89,7 +89,7 @@ const SongEditor = (function() {
         // Allow wider modal for buttons
         variationModal.querySelector('.modal-content').classList.add('variation-modal-content');
 
-        document.getElementById('variation-modal-title').textContent = `Variations for ${chordIdOrName}`;
+        document.getElementById('variation-modal-title').textContent = `${translations[currentLanguage]['Variations for']} ${chordIdOrName}`;
 
         const variations = await DB_SERVICE.getChordVariations(chordIdOrName);
         variationGrid.innerHTML = '';
@@ -150,10 +150,10 @@ const SongEditor = (function() {
                 makeDefaultBtn.disabled = isDefault;
                 if (isDefault) {
                     makeDefaultBtn.className = 'editor-action-btn btn-secondary';
-                    makeDefaultBtn.textContent = 'Already Default';
+                    makeDefaultBtn.textContent = translations[currentLanguage]['Already Default'];
                 } else {
                     makeDefaultBtn.className = 'editor-action-btn btn-primary';
-                    makeDefaultBtn.textContent = 'Make Default';
+                    makeDefaultBtn.textContent = translations[currentLanguage]['Make Default'];
                 }
             }
         };
@@ -163,7 +163,7 @@ const SongEditor = (function() {
         if (!makeDefaultBtn) {
             makeDefaultBtn = document.createElement('button');
             makeDefaultBtn.id = 'make-default-btn';
-            makeDefaultBtn.textContent = 'Make Default';
+            makeDefaultBtn.textContent = translations[currentLanguage]['Make Default'];
             makeDefaultBtn.className = 'editor-action-btn btn-primary';
             addBtn.parentNode.insertBefore(makeDefaultBtn, addBtn);
         }
@@ -174,7 +174,7 @@ const SongEditor = (function() {
                 const selected = variations.find(v => v.id === selectedVariationId);
                 if (selected && !selected.isDefault) {
                     await DB_SERVICE.setDefaultVariation(selectedVariationId);
-                    alert('Default variation updated successfully');
+                    alert(translations[currentLanguage]['Default variation updated successfully']);
                     closeVariationModal();
                 }
             }
