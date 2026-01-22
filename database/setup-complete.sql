@@ -43,9 +43,10 @@ GO
 -- Table: Chords
 CREATE TABLE Chords (
     Id INT IDENTITY(1,1) PRIMARY KEY,
-    Name NVARCHAR(50) NOT NULL UNIQUE,
+    Name NVARCHAR(50) NOT NULL,
     BaseFret INT NOT NULL DEFAULT 1,
     IsOriginal BIT NOT NULL DEFAULT 0,
+    IsDefault BIT NOT NULL DEFAULT 0,
     CreatedDate DATETIME2 DEFAULT GETDATE()
 );
 GO
@@ -158,144 +159,144 @@ GO
 DECLARE @ChordId INT;
 
 -- C Family Chords
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('C', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('C', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 3, 3), (@ChordId, 3, 2, 2), (@ChordId, 4, 0, 0), (@ChordId, 5, 1, 1), (@ChordId, 6, 0, 0);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('G', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('G', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 3, 2), (@ChordId, 2, 2, 1), (@ChordId, 3, 0, 0), (@ChordId, 4, 0, 0), (@ChordId, 5, 0, 0), (@ChordId, 6, 3, 3);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Am', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Am', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 0, 0), (@ChordId, 3, 2, 2), (@ChordId, 4, 2, 3), (@ChordId, 5, 1, 1), (@ChordId, 6, 0, 0);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('F', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('F', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 1, 1), (@ChordId, 2, 3, 3), (@ChordId, 3, 3, 4), (@ChordId, 4, 2, 2), (@ChordId, 5, 1, 1), (@ChordId, 6, 1, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 1);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Dm', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Dm', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, -1, 0), (@ChordId, 3, 0, 0), (@ChordId, 4, 2, 2), (@ChordId, 5, 3, 3), (@ChordId, 6, 1, 1);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Em', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Em', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 0, 0), (@ChordId, 2, 2, 2), (@ChordId, 3, 2, 3), (@ChordId, 4, 0, 0), (@ChordId, 5, 0, 0), (@ChordId, 6, 0, 0);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Bdim', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Bdim', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 2, 1), (@ChordId, 3, 3, 2), (@ChordId, 4, 4, 4), (@ChordId, 5, 3, 3), (@ChordId, 6, -1, 0);
 
 -- D Family Chords
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('D', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('D', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, -1, 0), (@ChordId, 3, 0, 0), (@ChordId, 4, 2, 1), (@ChordId, 5, 3, 3), (@ChordId, 6, 2, 2);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('A', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('A', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 0, 0), (@ChordId, 3, 2, 2), (@ChordId, 4, 2, 3), (@ChordId, 5, 2, 4), (@ChordId, 6, 0, 0);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Bm', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Bm', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 2, 1), (@ChordId, 3, 4, 3), (@ChordId, 4, 4, 4), (@ChordId, 5, 3, 2), (@ChordId, 6, 2, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 2);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('F#m', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('F#m', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 2, 1), (@ChordId, 2, 4, 3), (@ChordId, 3, 4, 4), (@ChordId, 4, 2, 1), (@ChordId, 5, 2, 1), (@ChordId, 6, 2, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 2);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('C#dim', 4, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('C#dim', 4, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 4, 1), (@ChordId, 3, 5, 2), (@ChordId, 4, 6, 4), (@ChordId, 5, 5, 3), (@ChordId, 6, -1, 0);
 
 -- E Family Chords
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('E', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('E', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 0, 0), (@ChordId, 2, 2, 2), (@ChordId, 3, 2, 3), (@ChordId, 4, 1, 1), (@ChordId, 5, 0, 0), (@ChordId, 6, 0, 0);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('B', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('B', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 2, 1), (@ChordId, 3, 4, 2), (@ChordId, 4, 4, 3), (@ChordId, 5, 4, 4), (@ChordId, 6, 2, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 2);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('C#m', 4, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('C#m', 4, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 4, 1), (@ChordId, 3, 6, 3), (@ChordId, 4, 6, 4), (@ChordId, 5, 5, 2), (@ChordId, 6, 4, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 4);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('G#m', 4, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('G#m', 4, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 4, 1), (@ChordId, 2, 6, 3), (@ChordId, 3, 6, 4), (@ChordId, 4, 4, 1), (@ChordId, 5, 4, 1), (@ChordId, 6, 4, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 4);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('D#dim', 6, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('D#dim', 6, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 6, 1), (@ChordId, 3, 7, 2), (@ChordId, 4, 8, 4), (@ChordId, 5, 7, 3), (@ChordId, 6, -1, 0);
 
 -- F Family Chords
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Bb', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Bb', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 1, 1), (@ChordId, 3, 3, 2), (@ChordId, 4, 3, 3), (@ChordId, 5, 3, 4), (@ChordId, 6, 1, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 1);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Gm', 3, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Gm', 3, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 3, 1), (@ChordId, 2, 5, 3), (@ChordId, 3, 5, 4), (@ChordId, 4, 3, 1), (@ChordId, 5, 3, 1), (@ChordId, 6, 3, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 3);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('Edim', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('Edim', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 0, 0), (@ChordId, 2, 1, 1), (@ChordId, 3, 2, 2), (@ChordId, 4, 0, 0), (@ChordId, 5, -1, 0), (@ChordId, 6, -1, 0);
 
 -- G Family Chords
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('F#dim', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('F#dim', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 2, 1), (@ChordId, 2, 3, 2), (@ChordId, 3, 4, 3), (@ChordId, 4, 2, 1), (@ChordId, 5, -1, 0), (@ChordId, 6, -1, 0);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 2);
 
 -- A Family Chords
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('G#dim', 4, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('G#dim', 4, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 4, 1), (@ChordId, 2, 5, 2), (@ChordId, 3, 6, 3), (@ChordId, 4, 4, 1), (@ChordId, 5, -1, 0), (@ChordId, 6, -1, 0);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 4);
 
 -- B Family Chords
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('F#', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('F#', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, 2, 1), (@ChordId, 2, 4, 3), (@ChordId, 3, 4, 4), (@ChordId, 4, 3, 2), (@ChordId, 5, 2, 1), (@ChordId, 6, 2, 1);
 INSERT INTO ChordBarres (ChordId, FretNumber) VALUES (@ChordId, 2);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('D#m', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('D#m', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, -1, 0), (@ChordId, 3, 1, 1), (@ChordId, 4, 3, 3), (@ChordId, 5, 4, 4), (@ChordId, 6, 2, 2);
 
-INSERT INTO Chords (Name, BaseFret, IsOriginal) VALUES ('A#dim', 1, 1);
+INSERT INTO Chords (Name, BaseFret, IsOriginal, IsDefault) VALUES ('A#dim', 1, 1, 1);
 SET @ChordId = SCOPE_IDENTITY();
 INSERT INTO ChordFingerings (ChordId, StringNumber, FretNumber, FingerNumber) VALUES 
 (@ChordId, 1, -1, 0), (@ChordId, 2, 1, 1), (@ChordId, 3, 2, 2), (@ChordId, 4, 3, 4), (@ChordId, 5, 2, 3), (@ChordId, 6, -1, 0);
