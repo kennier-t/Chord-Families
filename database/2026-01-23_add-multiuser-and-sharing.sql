@@ -35,11 +35,13 @@ BEGIN TRY
             email VARCHAR(255) NOT NULL,
             first_name VARCHAR(100) NULL,
             last_name VARCHAR(100) NULL,
-            password_hash VARCHAR(256) NULL,          -- stored as hex string from HASHBYTES
+            password_hash VARCHAR(256) NULL,
             language_pref CHAR(2) DEFAULT 'en' NULL,
+            user_type VARCHAR(20) NOT NULL DEFAULT 'user', -- NEW COLUMN
             is_verified BIT DEFAULT 0,
             created_at DATETIME2 DEFAULT SYSUTCDATETIME()
         );
+
 
         CREATE UNIQUE INDEX UX_Users_username ON dbo.Users(username);
         CREATE UNIQUE INDEX UX_Users_email ON dbo.Users(email);
@@ -55,15 +57,16 @@ BEGIN TRY
         BEGIN
             -- safe to insert with id = 1
             SET IDENTITY_INSERT dbo.Users ON;
-            INSERT INTO dbo.Users (id, username, email, first_name, last_name, password_hash, is_verified)
+            INSERT INTO dbo.Users (id, username, email, first_name, last_name, password_hash, is_verified, user_type)
             VALUES (
                 1,
                 'kennier',
                 'kennier.trejos@gmail.com',
                 'Kennier',
                 'Trejos',
-                LOWER(CONVERT(VARCHAR(256), HASHBYTES('SHA2_256', 'kennier26'), 2)), -- DB-level SHA2_256 hex
-                1
+                LOWER(CONVERT(VARCHAR(256), HASHBYTES('SHA2_256', 'kennier26'), 2)),
+                1,
+                'admin'
             );
             SET IDENTITY_INSERT dbo.Users OFF;
         END
@@ -71,14 +74,15 @@ BEGIN TRY
         BEGIN
             -- Cannot safely force id = 1 because Users contains data.
             -- Insert normally and the application can re-map if id=1 is required.
-            INSERT INTO dbo.Users (username, email, first_name, last_name, password_hash, is_verified)
+            INSERT INTO dbo.Users (username, email, first_name, last_name, password_hash, is_verified, user_type)
             VALUES (
                 'kennier',
                 'kennier.trejos@gmail.com',
                 'Kennier',
                 'Trejos',
                 LOWER(CONVERT(VARCHAR(256), HASHBYTES('SHA2_256', 'kennier26'), 2)),
-                1
+                1,
+                'admin'
             );
         END;
     END;
