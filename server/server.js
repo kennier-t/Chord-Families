@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // SQL Server Configuration using msnodesqlv8 for Windows Authentication
 const config = {
-    connectionString: 'Driver={ODBC Driver 17 for SQL Server};Server=DESKTOP-09RH2IA\\SQLEXPRESS;Database=ChordFamilies;Trusted_Connection=yes;CharSet=UTF8;',
+    connectionString: 'Driver={ODBC Driver 17 for SQL Server};Server=DESKTOP-09RH2IA\\SQLEXPRESS;Database=ChordSmith;Trusted_Connection=yes;CharSet=UTF8;',
     options: {
         trustedConnection: true,
         useUTC: false
@@ -944,7 +944,7 @@ app.post('/api/convert-pdf', upload.single('pdf'), async (req, res) => {
 initializeDB().then(() => {
     app.listen(PORT, () => {
         console.log(`\n========================================`);
-        console.log(`🎸 Chord Families API Server`);
+        console.log(`🎸 ChordSmith API Server`);
         console.log(`========================================`);
         console.log(`Server running on: http://localhost:${PORT}`);
         console.log(`Database: ${database}`);

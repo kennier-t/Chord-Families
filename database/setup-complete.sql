@@ -1,5 +1,5 @@
 -- =============================================
--- Chord Families - Complete Database Setup Script
+-- ChordSmith - Complete Database Setup Script
 -- SQL Server
 -- This script creates the entire database with all tables and data
 -- Execute this script once to set up everything
@@ -9,18 +9,18 @@ USE master;
 GO
 
 -- Drop database if exists
-IF DB_ID('ChordFamilies') IS NOT NULL
+IF DB_ID('ChordSmith') IS NOT NULL
 BEGIN
-    ALTER DATABASE ChordFamilies SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE ChordFamilies;
+    ALTER DATABASE ChordSmith SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE ChordSmith;
 END
 GO
 
 -- Create database
-CREATE DATABASE ChordFamilies;
+CREATE DATABASE ChordSmith;
 GO
 
-USE ChordFamilies;
+USE ChordSmith;
 GO
 
 PRINT '================================================';
@@ -414,7 +414,7 @@ GO
 PRINT '================================================';
 PRINT 'Database setup completed successfully!';
 PRINT '================================================';
-PRINT 'Database: ChordFamilies';
+PRINT 'Database: ChordSmith';
 PRINT 'Tables created: 10';
 PRINT 'Views created: 3';
 PRINT 'Chords inserted: 28';

@@ -1,10 +1,10 @@
-# Chord Families
+# ChordSmith
 
 A web application for visualizing, creating, and downloading guitar chord diagrams organized by musical families.
 
 ## Features
 
-### 🎸 Browse Chord Families
+### 🎸 Browse Chords
 - **7 Musical Families**: C, D, E, F, G, A, B
 - Each family displays its related chords in an organized gallery
 - Click any chord to view it in detail
