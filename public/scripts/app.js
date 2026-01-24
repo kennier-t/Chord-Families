@@ -1,6 +1,7 @@
 // Application state
 let currentFamily = null;
 let currentChord = null;
+let user = null;
 
 // DOM elements
 const familiesView = document.getElementById('families-view');
@@ -10,13 +11,60 @@ const practiceModal = document.getElementById('practice-modal');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
     initializeFamilyButtons();
     initializeBackButtons();
     initializeDownloadButtons();
     initializeUtilityButtons();
     initializeVariationIconHandler();
     initializePracticeButton();
+    initializeLogoutButton();
+    initializeShareButton();
 });
+
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login.html';
+    } else {
+        // You can also verify the token with the server here if needed
+        fetch('/api/users/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.message === 'Unauthorized') {
+                logout();
+            } else {
+                user = data;
+                displayUserProfile();
+            }
+        })
+        .catch(() => logout());
+    }
+}
+
+function displayUserProfile() {
+    const profileLink = document.createElement('a');
+    profileLink.href = '/profile.html';
+    profileLink.textContent = `Welcome, ${user.first_name}`;
+    document.querySelector('header').appendChild(profileLink);
+}
+
+function initializeLogoutButton() {
+    const logoutBtn = document.createElement('button');
+    logoutBtn.id = 'logout-btn';
+    logoutBtn.textContent = 'Logout';
+    logoutBtn.addEventListener('click', logout);
+    document.querySelector('header').appendChild(logoutBtn);
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+}
 
 // Initialize variation icon click handler
 function initializeVariationIconHandler() {
@@ -294,4 +342,53 @@ function initializeUtilityButtons() {
             window.open('pdf-to-text.html', '_blank');
         });
     }
+
+    const openSharesBtn = document.getElementById('open-shares-btn');
+    if (openSharesBtn) {
+        openSharesBtn.addEventListener('click', () => {
+            window.open('shares.html', '_blank');
+        });
+    }
+}
+
+// Share modal logic
+function initializeShareButton() {
+    const shareModal = document.getElementById('share-modal');
+    const closeShareModal = document.getElementById('close-share-modal');
+    const shareBtn = document.getElementById('share-btn');
+
+    document.getElementById('share-modal-chord-btn').addEventListener('click', () => {
+        shareModal.classList.remove('hidden');
+    });
+
+    closeShareModal.addEventListener('click', () => {
+        shareModal.classList.add('hidden');
+    });
+
+    shareBtn.addEventListener('click', async () => {
+        const recipient_username = document.getElementById('recipient-username').value;
+        if (!recipient_username) {
+            alert('Please enter a recipient username.');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/shares/chord', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ chord_id: currentChord.id, recipient_username })
+            });
+            const data = await res.json();
+            alert(data.message);
+            if (res.ok) {
+                shareModal.classList.add('hidden');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred. Please try again.');
+        }
+    });
 }

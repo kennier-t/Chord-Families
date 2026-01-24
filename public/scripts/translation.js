@@ -258,6 +258,9 @@ const translations = {
                         'Randomize': 'Aleatorizar',
                         'No chords available for practice in this family.': 'No hay acordes disponibles para practicar en esta familia.',
                         ' Family Practice': ' Práctica de Familia',
+                        'Shares': 'Compartidos',
+                        'Share': 'Compartir',
+                        'Recipient Username': 'Nombre de usuario del destinatario',
                     }};
 
 let currentLanguage = localStorage.getItem('language') || 'es';

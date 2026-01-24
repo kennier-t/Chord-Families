@@ -20,11 +20,15 @@
   },
   "homepage": "https://github.com/kennier-t/ChordSmith#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.2.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "msnodesqlv8": "^4.2.1",
     "mssql": "^12.2.0",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.12"
   }
 }

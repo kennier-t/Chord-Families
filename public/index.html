@@ -19,6 +19,7 @@
             <div class="top-buttons-container">
                 <button id="gen-song-chords-btn" class="utility-btn utility-btn-modern" data-translate="Gen Song Chords">Gen Song Chords</button>
                 <button id="open-songs-btn" class="utility-btn utility-btn-modern" data-translate="Songs">Songs</button>
+                <button id="open-shares-btn" class="utility-btn utility-btn-modern" data-translate="Shares">Shares</button>
                 <button id="create-chord-btn" class="utility-btn utility-btn-modern" data-translate="Create Chord">Create Chord</button>
                 <button id="pdf-to-text-btn" class="utility-btn utility-btn-modern" data-translate="PDF → Text">PDF → Text</button>
             </div>
@@ -56,6 +57,7 @@
                 <div class="download-options">
                     <button id="download-modal-chord-png" class="download-btn" data-translate="Download PNG">Download PNG</button>
                     <button id="download-modal-chord-svg" class="download-btn" data-translate="Download SVG">Download SVG</button>
+                    <button id="share-modal-chord-btn" class="download-btn" data-translate="Share">Share</button>
                 </div>
             </div>
         </div>
@@ -392,6 +394,19 @@
                         <button id="cancel-song-edit-btn" class="editor-action-btn btn-secondary" data-translate="Cancel">Cancel</button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="share-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <button id="close-share-modal" class="close-btn">×</button>
+                <h2 data-translate="Share">Share</h2>
+                <div class="form-group">
+                    <label for="recipient-username" data-translate="Recipient Username">Recipient Username</label>
+                    <input type="text" id="recipient-username" name="recipient-username" required>
+                </div>
+                <button id="share-btn" class="download-btn" data-translate="Share">Share</button>
             </div>
         </div>
     </div>
