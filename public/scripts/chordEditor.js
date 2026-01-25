@@ -111,21 +111,21 @@
             return;
         }
         
-        if (chord.isOriginal) {
+        if (chord.IsOriginal) {
             alert('Cannot edit original chords');
             showListView();
             return;
         }
         
-        editorState.chordId = chord.id;
+        editorState.chordId = chord.Id;
         editorState.frets = [...chord.frets];
         editorState.fingers = [...chord.fingers];
         editorState.barres = [...chord.barres];
-        editorState.baseFret = chord.baseFret;
-        
+        editorState.baseFret = chord.BaseFret;
+
         document.getElementById('chord-name-input').value = chord.Name;
-        document.getElementById('base-fret-input').value = chord.baseFret;
-        document.getElementById('is-default-checkbox').checked = chord.isDefault;
+        document.getElementById('base-fret-input').value = chord.BaseFret;
+        document.getElementById('is-default-checkbox').checked = chord.IsDefault;
         document.getElementById('name-error').textContent = '';
     }
     
@@ -145,18 +145,18 @@
         customChords.sort((a, b) => {
             if (a.Name < b.Name) return -1;
             if (a.Name > b.Name) return 1;
-            if (a.id < b.id) return -1;
-            if (a.id > b.id) return 1;
+            if (a.Id < b.Id) return -1;
+            if (a.Id > b.Id) return 1;
             return 0;
         });
 
         customChords.forEach(chord => {
             const item = document.createElement('div');
             item.className = 'custom-chord-item';
-            item.onclick = () => showEditorView(chord.id);
-            
+            item.onclick = () => showEditorView(chord.Id);
+
             const title = document.createElement('h4');
-            title.textContent = chord.isDefault ? `${chord.Name} (Default)` : chord.Name;
+            title.textContent = chord.IsDefault ? `${chord.Name} (Default)` : chord.Name;
             
             const renderer = new ChordRenderer(chord);
             const svgString = renderer.getSVGString(false);
@@ -450,7 +450,7 @@
         if (!editorState.chordId) {
             // For new chords, check if name is unique
             const customChords = await DB_SERVICE.getCustomChords();
-            const existingWithName = customChords.filter(c => c.name === name);
+            const existingWithName = customChords.filter(c => c.Name === name);
             if (existingWithName.length === 0) {
                 finalIsDefault = true;
             }
