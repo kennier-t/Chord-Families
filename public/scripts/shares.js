@@ -1,6 +1,12 @@
 const songSharesList = document.getElementById('song-shares-list');
 const chordSharesList = document.getElementById('chord-shares-list');
+const shareTypeSelect = document.getElementById('share-type');
+const shareItemSelect = document.getElementById('share-item');
+const sendShareForm = document.getElementById('send-share-form');
 const token = localStorage.getItem('token');
+
+let userSongs = [];
+let userChords = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!token) {
@@ -9,13 +15,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const res = await fetch('/api/shares/incoming', {
+        // Load user's songs and chords
+        const [songsRes, chordsRes] = await Promise.all([
+            fetch('/api/songs', { headers: { 'Authorization': `Bearer ${token}` } }),
+            fetch('/api/chords', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+
+        if (songsRes.ok) {
+            userSongs = await songsRes.json();
+        }
+        if (chordsRes.ok) {
+            userChords = await chordsRes.json();
+        }
+
+        // Populate initial dropdown (songs by default)
+        populateItemDropdown('song');
+
+        // Load incoming shares
+        const sharesRes = await fetch('/api/shares/incoming', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-        const data = await res.json();
-        if (res.ok) {
+        const data = await sharesRes.json();
+        if (sharesRes.ok) {
             renderShares(data.songShares, songSharesList, 'song');
             renderShares(data.chordShares, chordSharesList, 'chord');
         } else {
@@ -27,13 +50,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Handle share type change
+shareTypeSelect.addEventListener('change', () => {
+    populateItemDropdown(shareTypeSelect.value);
+});
+
+// Handle form submission
+sendShareForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const type = shareTypeSelect.value;
+    const itemId = shareItemSelect.value;
+    const recipientUsername = document.getElementById('recipient-username').value.trim();
+
+    if (!itemId || !recipientUsername) {
+        alert('Please select an item and enter a recipient username.');
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/shares/${type}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                [`${type}_id`]: itemId,
+                recipient_username: recipientUsername
+            })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (res.ok) {
+            // Clear form
+            sendShareForm.reset();
+            populateItemDropdown('song'); // Reset to songs
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred. Please try again.');
+    }
+});
+
+function populateItemDropdown(type) {
+    shareItemSelect.innerHTML = '<option value="">Select an item</option>';
+    const items = type === 'song' ? userSongs : userChords;
+    items.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.Id;
+        option.textContent = type === 'song' ? item.Title : item.Name;
+        shareItemSelect.appendChild(option);
+    });
+}
+
 function renderShares(shares, listElement, type) {
     listElement.innerHTML = '';
     shares.forEach(share => {
         const li = document.createElement('li');
         const payload = JSON.parse(share.payload);
         li.innerHTML = `
-            <span>${payload.title || payload.name} from ${share.sender_user_id}</span>
+            <span>${payload.Title || payload.Name} from ${payload.senderUsername}</span>
             <button class="accept-share" data-id="${share.id}" data-type="${type}">Accept</button>
             <button class="reject-share" data-id="${share.id}" data-type="${type}">Reject</button>
         `;

@@ -3,17 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incoming Shares - ChordSmith</title>
+    <title>Shares - ChordSmith</title>
     <link rel="stylesheet" href="styles/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Incoming Shares</h1>
-        <div id="shares-container">
-            <h2>Song Shares</h2>
-            <ul id="song-shares-list"></ul>
-            <h2>Chord Shares</h2>
-            <ul id="chord-shares-list"></ul>
+        <h1>Shares</h1>
+
+        <!-- Send Shares Section -->
+        <div id="send-shares-section">
+            <h2>Send Share</h2>
+            <form id="send-share-form">
+                <div>
+                    <label for="share-type">Type:</label>
+                    <select id="share-type" required>
+                        <option value="song">Song</option>
+                        <option value="chord">Chord</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="share-item">Item:</label>
+                    <select id="share-item" required>
+                        <option value="">Select an item</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="recipient-username">Recipient Username:</label>
+                    <input type="text" id="recipient-username" required>
+                </div>
+                <button type="submit">Send Share</button>
+            </form>
+        </div>
+
+        <!-- Incoming Shares Section -->
+        <div id="incoming-shares-section">
+            <h2>Incoming Shares</h2>
+            <div id="shares-container">
+                <h3>Song Shares</h3>
+                <ul id="song-shares-list"></ul>
+                <h3>Chord Shares</h3>
+                <ul id="chord-shares-list"></ul>
+            </div>
         </div>
     </div>
     <script src="scripts/shares.js"></script>

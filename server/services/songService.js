@@ -198,14 +198,15 @@ async function shareSong(songId, senderId, recipientUsername) {
     if (!recipient) {
         throw new Error('Recipient not found');
     }
+    const sender = await userService.findUserById(senderId);
     const song = await getSongById(songId, senderId);
     if (!song) {
         throw new Error('Song not found');
     }
 
     await db.query(
-        'INSERT INTO SongShares (song_id, sender_user_id, recipient_user_id, payload) VALUES (@songId, @senderId, @recipientId, @payload)',
-        { songId, senderId, recipientId: recipient.id, payload: JSON.stringify(song) }
+        'INSERT INTO SongShares (song_id, sender_user_id, recipient_username, recipient_user_id, payload) VALUES (@songId, @senderId, @recipientUsername, @recipientId, @payload)',
+        { songId, senderId, recipientUsername, recipientId: recipient.id, payload: JSON.stringify({ ...song, senderUsername: sender.username }) }
     );
 }
 

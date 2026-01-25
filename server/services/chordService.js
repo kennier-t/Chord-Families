@@ -230,14 +230,15 @@ async function shareChord(chordId, senderId, recipientUsername) {
     if (!recipient) {
         throw new Error('Recipient not found');
     }
+    const sender = await userService.findUserById(senderId);
     const chord = await getChordById(chordId, senderId);
     if (!chord) {
         throw new Error('Chord not found');
     }
 
     await db.query(
-        'INSERT INTO ChordShares (chord_id, sender_user_id, recipient_user_id, payload) VALUES (@chordId, @senderId, @recipientId, @payload)',
-        { chordId, senderId, recipientId: recipient.id, payload: JSON.stringify(chord) }
+        'INSERT INTO ChordShares (chord_id, sender_user_id, recipient_username, recipient_user_id, payload) VALUES (@chordId, @senderId, @recipientUsername, @recipientId, @payload)',
+        { chordId, senderId, recipientUsername, recipientId: recipient.id, payload: JSON.stringify({ ...chord, senderUsername: sender.username }) }
     );
 }
 
