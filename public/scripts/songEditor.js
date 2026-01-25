@@ -101,11 +101,11 @@ const SongEditor = (function() {
             variations.forEach(variation => {
                 const item = document.createElement('div');
                 item.className = 'variation-item';
-                if (variation.isDefault) item.classList.add('is-default');
-                item.dataset.chordId = variation.id;
+                if (variation.IsDefault) item.classList.add('is-default');
+                item.dataset.chordId = variation.Id;
 
                 const title = document.createElement('h4');
-                title.textContent = variation.name;
+                title.textContent = variation.Name;
 
                 const renderer = new ChordRenderer(variation);
                 item.appendChild(title);
@@ -115,7 +115,7 @@ const SongEditor = (function() {
                     const currentSelected = variationGrid.querySelector('.selected');
                     if (currentSelected) currentSelected.classList.remove('selected');
                     item.classList.add('selected');
-                    selectedVariationId = variation.id;
+                    selectedVariationId = variation.Id;
                     updateMakeDefaultBtn();
                 });
                 variationGrid.appendChild(item);
@@ -171,8 +171,8 @@ const SongEditor = (function() {
         makeDefaultBtn.onclick = async () => {
             if (selectedVariationId) {
                 const variations = await DB_SERVICE.getChordVariations(chordIdOrName);
-                const selected = variations.find(v => v.id === selectedVariationId);
-                if (selected && !selected.isDefault) {
+                const selected = variations.find(v => v.Id === selectedVariationId);
+                if (selected && !selected.IsDefault) {
                     await DB_SERVICE.setDefaultVariation(selectedVariationId);
                     alert(translations[currentLanguage]['Default variation updated successfully']);
                     closeVariationModal();
@@ -197,15 +197,15 @@ const SongEditor = (function() {
 
         for (const chordName in chordGroups) {
             const group = chordGroups[chordName];
-            const defaultChord = group.find(c => c.isDefault) || group[0];
+            const defaultChord = group.find(c => c.IsDefault) || group[0];
             const hasVariations = group.length > 1;
 
             const item = document.createElement('div');
             item.className = 'chord-selector-item';
-            
+
             item.addEventListener('click', (e) => {
                 if (e.target.closest('.variation-btn')) return;
-                addChordToSelection(defaultChord.id);
+                addChordToSelection(defaultChord.Id);
             });
 
             const title = document.createElement('h4');
