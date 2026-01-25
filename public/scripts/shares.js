@@ -118,28 +118,99 @@ function renderShares(shares, listElement, type) {
 }
 
 document.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('accept-share') || e.target.classList.contains('reject-share')) {
+    if (e.target.classList.contains('accept-share')) {
         const shareId = e.target.dataset.id;
         const type = e.target.dataset.type;
-        const action = e.target.classList.contains('accept-share') ? 'accept' : 'reject';
-
-        try {
-            const res = await fetch(`/api/shares/${shareId}/${action}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ type })
-            });
-            const data = await res.json();
-            alert(data.message);
-            if (res.ok) {
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error(error);
-            alert('An error occurred. Please try again.');
+        if (type === 'song') {
+            await showFolderSelectionModal(shareId, type);
+        } else {
+            await acceptShare(shareId, type, []);
         }
+    } else if (e.target.classList.contains('reject-share')) {
+        const shareId = e.target.dataset.id;
+        const type = e.target.dataset.type;
+        await rejectShare(shareId, type);
     }
 });
+
+async function showFolderSelectionModal(shareId, type) {
+    try {
+        const res = await fetch('/api/songs/folders', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const folders = await res.json();
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>Select Folders for the Song</h3>
+                <div id="folders-list">
+                    ${folders.map(folder => `
+                        <label>
+                            <input type="checkbox" value="${folder.Id}"> ${folder.Name}
+                        </label><br>
+                    `).join('')}
+                </div>
+                <button id="accept-with-folders">Accept</button>
+                <button id="cancel-accept">Cancel</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        document.getElementById('accept-with-folders').addEventListener('click', async () => {
+            const selectedFolders = Array.from(document.querySelectorAll('#folders-list input:checked')).map(cb => parseInt(cb.value));
+            await acceptShare(shareId, type, selectedFolders);
+            document.body.removeChild(modal);
+        });
+        
+        document.getElementById('cancel-accept').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred loading folders. Please try again.');
+    }
+}
+
+async function acceptShare(shareId, type, folderIds) {
+    try {
+        const res = await fetch(`/api/shares/${shareId}/accept`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ type, folderIds })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (res.ok) {
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+async function rejectShare(shareId, type) {
+    try {
+        const res = await fetch(`/api/shares/${shareId}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ type })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (res.ok) {
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred. Please try again.');
+    }
+}

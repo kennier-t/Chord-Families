@@ -23,10 +23,19 @@ const DB_SERVICE = (function() {
             });
             
             if (!response.ok) {
-                const error = await response.json();
+                let error;
+                try {
+                    error = await response.json();
+                } catch {
+                    error = { error: `HTTP error! status: ${response.status}` };
+                }
                 throw new Error(error.error || `HTTP error! status: ${response.status}`);
             }
-            
+
+            if (response.status === 204) {
+                return null;
+            }
+
             return await response.json();
         } catch (error) {
             console.error(`API Error (${endpoint}):`, error);

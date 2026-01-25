@@ -67,14 +67,14 @@ async function getSongById(songId, userId) {
                STUFF((
                    SELECT ',' + CAST(sfm.FolderId AS VARCHAR)
                    FROM SongFolderMapping sfm
-                   WHERE sfm.SongId = s.Id
+                   WHERE sfm.SongId = s.Id AND us.is_creator = 1
                    FOR XML PATH('')
                ), 1, 1, '') AS folderIds,
                STUFF((
                    SELECT ', ' + f.Name
                    FROM SongFolderMapping sfm
                    JOIN Folders f ON sfm.FolderId = f.Id
-                   WHERE sfm.SongId = s.Id
+                   WHERE sfm.SongId = s.Id AND us.is_creator = 1
                    FOR XML PATH('')
                ), 1, 2, '') AS folderNames,
                STUFF((
@@ -187,10 +187,22 @@ async function forkSong(originalSongId, song, userId) {
 
 async function deleteSong(songId, userId) {
     const song = await getSongById(songId, userId);
-    if (!song || song.creator_id !== userId) {
-        throw new Error('Unauthorized');
+    if (!song) {
+        throw new Error('Song not found');
     }
-    await db.query('DELETE FROM Songs WHERE Id = @songId', { songId });
+    if (song.creator_id === userId) {
+        // Creator deletes the song entirely
+        await db.query('DELETE FROM Songs WHERE Id = @songId', { songId });
+    } else {
+        // Non-creator removes the mapping
+        await db.query('DELETE FROM UserSongs WHERE user_id = @userId AND song_id = @songId', { userId, songId });
+        // Also remove from user's folders
+        await db.query(`
+            DELETE sfm FROM SongFolderMapping sfm
+            JOIN Folders f ON sfm.FolderId = f.Id
+            WHERE sfm.SongId = @songId AND f.creator_id = @userId
+        `, { songId, userId });
+    }
 }
 
 async function shareSong(songId, senderId, recipientUsername) {
@@ -215,7 +227,7 @@ async function getIncomingShares(userId) {
     return result.recordset;
 }
 
-async function acceptShare(shareId, userId) {
+async function acceptShare(shareId, userId, folderIds = []) {
     const shareResult = await db.query('SELECT * FROM SongShares WHERE id = @shareId AND recipient_user_id = @userId', { shareId, userId });
     const share = shareResult.recordset[0];
     if (!share) {
@@ -247,6 +259,16 @@ async function acceptShare(shareId, userId) {
                 .query('IF NOT EXISTS (SELECT 1 FROM UserChords WHERE user_id = @user_id AND chord_id = @chord_id) INSERT INTO UserChords (user_id, chord_id, is_creator) VALUES (@user_id, @chord_id, 0)');
         }
 
+        // Add to selected folders
+        if (folderIds && folderIds.length > 0) {
+            for (const folderId of folderIds) {
+                await new sql.Request(transaction)
+                    .input('songId', sql.Int, share.song_id)
+                    .input('folderId', sql.Int, folderId)
+                    .query('IF NOT EXISTS (SELECT 1 FROM SongFolderMapping WHERE SongId = @songId AND FolderId = @folderId) INSERT INTO SongFolderMapping (SongId, FolderId) VALUES (@songId, @folderId)');
+            }
+        }
+
         await transaction.commit();
     } catch (error) {
         await transaction.rollback();
@@ -258,30 +280,33 @@ async function rejectShare(shareId, userId) {
     await db.query('UPDATE SongShares SET status = \'rejected\' WHERE id = @shareId AND recipient_user_id = @userId', { shareId, userId });
 }
 
-async function getAllFolders() {
-    const result = await db.query('SELECT * FROM Folders ORDER BY Name');
+async function getAllFolders(userId) {
+    const result = await db.query('SELECT * FROM Folders WHERE creator_id = @userId ORDER BY Name', { userId });
     return result.recordset;
 }
 
 async function createFolder(folder, userId) {
     const { name } = folder;
-    const result = await db.query('INSERT INTO Folders (Name) OUTPUT INSERTED.Id VALUES (@name)', { name });
+    const result = await db.query('INSERT INTO Folders (Name, creator_id) OUTPUT INSERTED.Id VALUES (@name, @userId)', { name, userId });
     return { id: result.recordset[0].Id };
 }
 
 async function updateFolder(folderId, folder, userId) {
     const { name } = folder;
-    await db.query('UPDATE Folders SET Name = @name WHERE Id = @folderId', { folderId, name });
+    await db.query('UPDATE Folders SET Name = @name WHERE Id = @folderId AND creator_id = @userId', { folderId, name, userId });
     return { id: folderId };
 }
 
 async function deleteFolder(folderId, userId) {
-    await db.query('DELETE FROM Folders WHERE Id = @folderId', { folderId });
+    await db.query('DELETE FROM Folders WHERE Id = @folderId AND creator_id = @userId', { folderId, userId });
 }
 
 async function getSongsByFolder(folderId, userId) {
     const parsedFolderId = parseInt(folderId);
     if (isNaN(parsedFolderId)) return [];
+    // First check if folder belongs to user
+    const folderCheck = await db.query('SELECT Id FROM Folders WHERE Id = @folderId AND creator_id = @userId', { folderId: parsedFolderId, userId });
+    if (folderCheck.recordset.length === 0) return [];
     const result = await db.query(`
         SELECT s.*, us.is_creator FROM Songs s
         JOIN UserSongs us ON s.id = us.song_id
@@ -337,8 +362,8 @@ async function getSongFolders(songId, userId) {
     const result = await db.query(`
         SELECT f.* FROM Folders f
         JOIN SongFolderMapping sfm ON f.Id = sfm.FolderId
-        WHERE sfm.SongId = @songId
-    `, { songId: parsedSongId });
+        WHERE sfm.SongId = @songId AND f.creator_id = @userId
+    `, { songId: parsedSongId, userId });
     return result.recordset;
 }
 

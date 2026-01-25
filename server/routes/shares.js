@@ -40,9 +40,9 @@ router.get('/incoming', authMiddleware, async (req, res) => {
 router.post('/:shareId/accept', authMiddleware, async (req, res) => {
     try {
         const { shareId } = req.params;
-        const { type } = req.body;
+        const { type, folderIds } = req.body;
         if (type === 'song') {
-            await songService.acceptShare(shareId, req.user.id);
+            await songService.acceptShare(shareId, req.user.id, folderIds);
         } else if (type === 'chord') {
             await chordService.acceptShare(shareId, req.user.id);
         } else {

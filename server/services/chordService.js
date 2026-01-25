@@ -219,10 +219,16 @@ async function forkChord(originalChordId, chord, userId) {
 
 async function deleteChord(chordId, userId) {
     const chord = await getChordById(chordId, userId);
-    if (!chord || chord.creator_id !== userId) {
-        throw new Error('Unauthorized');
+    if (!chord) {
+        throw new Error('Chord not found');
     }
-    await db.query('DELETE FROM Chords WHERE Id = @chordId', { chordId });
+    if (chord.creator_id === userId) {
+        // Creator deletes the chord entirely
+        await db.query('DELETE FROM Chords WHERE Id = @chordId', { chordId });
+    } else {
+        // Non-creator removes the mapping
+        await db.query('DELETE FROM UserChords WHERE user_id = @userId AND chord_id = @chordId', { userId, chordId });
+    }
 }
 
 async function shareChord(chordId, senderId, recipientUsername) {

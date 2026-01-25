@@ -6,7 +6,7 @@ const { authMiddleware } = require('./users');
 // Folders routes
 router.get('/folders', authMiddleware, async (req, res) => {
     try {
-        const folders = await songService.getAllFolders();
+        const folders = await songService.getAllFolders(req.user.id);
         res.json(folders);
     } catch (error) {
         console.error(error);
