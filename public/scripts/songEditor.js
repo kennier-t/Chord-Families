@@ -346,19 +346,19 @@ const SongEditor = (function() {
                 alert(translations[currentLanguage]['Song not found'] || 'Song not found');
                 return;
             }
-            document.getElementById('song-title-input').value = song.title;
-            document.getElementById('song-date-input').value = song.songDate;
-            document.getElementById('song-notes-input').value = song.notes;
-            document.getElementById('song-key-input').value = song.songKey;
-            document.getElementById('song-capo-input').value = song.capo;
-            document.getElementById('song-bpm-input').value = song.bpm;
-            document.getElementById('song-effects-input').value = song.effects;
-            document.getElementById('song-content-font-size-input').value = song.songContentFontSizePt || '';
-            document.getElementById('song-content-textarea').value = song.contentText;
+            document.getElementById('song-title-input').value = song.Title;
+            document.getElementById('song-date-input').value = song.SongDate;
+            document.getElementById('song-notes-input').value = song.Notes;
+            document.getElementById('song-key-input').value = song.SongKey;
+            document.getElementById('song-capo-input').value = song.Capo;
+            document.getElementById('song-bpm-input').value = song.BPM;
+            document.getElementById('song-effects-input').value = song.Effects;
+            document.getElementById('song-content-font-size-input').value = song.SongContentFontSizePt || '';
+            document.getElementById('song-content-textarea').value = song.ContentText;
             updateContentFontSize();
-            selectedChordIds = await SONGS_SERVICE.getSongChordDiagrams(songId);
+            selectedChordIds = song.chordIds || [];
             await updateSelectedChordsList();
-            const folderIds = (await SONGS_SERVICE.getSongFolders(songId)).map(f => f.Id);
+            const folderIds = song.folderIds || [];
             document.querySelectorAll('.folder-checkbox').forEach(cb => {
                 cb.checked = folderIds.includes(parseInt(cb.value));
             });

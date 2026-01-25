@@ -63,11 +63,37 @@ async function createSong(song, userId) {
 
 async function getSongById(songId, userId) {
     const result = await db.query(`
-        SELECT s.*, us.is_creator FROM Songs s
+        SELECT s.*, us.is_creator,
+               STUFF((
+                   SELECT ',' + CAST(sfm.FolderId AS VARCHAR)
+                   FROM SongFolderMapping sfm
+                   WHERE sfm.SongId = s.Id
+                   FOR XML PATH('')
+               ), 1, 1, '') AS folderIds,
+               STUFF((
+                   SELECT ', ' + f.Name
+                   FROM SongFolderMapping sfm
+                   JOIN Folders f ON sfm.FolderId = f.Id
+                   WHERE sfm.SongId = s.Id
+                   FOR XML PATH('')
+               ), 1, 2, '') AS folderNames,
+               STUFF((
+                    SELECT ',' + CAST(scd.ChordId AS VARCHAR)
+                    FROM SongChordDiagrams scd
+                    WHERE scd.SongId = s.Id
+                    ORDER BY scd.DisplayOrder
+                    FOR XML PATH('')
+                ), 1, 1, '') AS chordIds
+        FROM Songs s
         LEFT JOIN UserSongs us ON s.id = us.song_id AND us.user_id = @userId
         WHERE s.id = @songId
     `, { userId, songId });
-    return result.recordset[0];
+    const song = result.recordset[0];
+    if (song) {
+        song.folderIds = song.folderIds ? song.folderIds.split(',').map(Number) : [];
+        song.chordIds = song.chordIds ? song.chordIds.split(',').map(Number) : [];
+    }
+    return song;
 }
 
 async function getSongsByUserId(userId) {

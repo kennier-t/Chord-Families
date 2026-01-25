@@ -249,8 +249,8 @@ const SongsManager = (function() {
             // Get unique keys
             const keys = new Set();
             for (const song of songs) {
-                const key = song.songKey && song.songKey.trim()
-                    ? song.songKey.trim()
+                const key = song.SongKey && song.SongKey.trim()
+                    ? song.SongKey.trim()
                     : (translations[currentLanguage]['Unknown'] || 'Unknown');
                 keys.add(key);
             }
@@ -427,8 +427,8 @@ const SongsManager = (function() {
             if (seenIds.has(song.Id)) continue;
             seenIds.add(song.Id);
             
-            const key = song.songKey && song.songKey.trim() 
-                ? song.songKey.trim() 
+            const key = song.SongKey && song.SongKey.trim() 
+                ? song.SongKey.trim() 
                 : (translations[currentLanguage]['Unknown'] || 'Unknown');
             
             if (!songsByKey[key]) {
@@ -625,9 +625,9 @@ const SongsManager = (function() {
             <div class="song-info">
                 <h3>${song.Title}</h3>
                 <div class="song-meta">
-                    ${song.songKey ? `Key: ${song.songKey}` : ''} 
-                    ${song.capo ? `• Capo: ${song.capo}` : ''}
-                    ${song.bpm ? `• BPM: ${song.bpm}` : ''}
+                    ${song.SongKey ? `Key: ${song.SongKey}` : ''} 
+                    ${song.Capo ? `• Capo: ${song.Capo}` : ''}
+                    ${song.BPM ? `• BPM: ${song.BPM}` : ''}
                 </div>
             </div>
             <div class="song-actions">
