@@ -88,6 +88,13 @@ const DB_SERVICE = (function() {
             return []; // Return empty array on error
         }
     }
+
+    // Set default variation
+    async function setDefaultVariation(chordId) {
+        return await apiCall(`/chords/${chordId}/default`, {
+            method: 'PUT'
+        });
+    }
     
     // Create a new custom chord
     async function createChord(chordData) {
@@ -116,7 +123,7 @@ const DB_SERVICE = (function() {
 
     // Set a chord variation as the default for its name
     async function setDefaultVariation(chordId) {
-        await apiCall(`/chords/${chordId}/set-default`, {
+        return await apiCall(`/chords/${chordId}/default`, {
             method: 'PUT'
         });
     }

@@ -147,6 +147,89 @@ async function getChordsByUserId(userId) {
     return chords;
 }
 
+async function getChordVariations(name, userId) {
+    const result = await db.query(`
+        SELECT c.*, ISNULL(uc.is_creator, 0) as is_creator FROM Chords c
+        LEFT JOIN UserChords uc ON c.id = uc.chord_id AND uc.user_id = @userId
+        WHERE c.Name = @name AND (c.IsOriginal = 1 OR uc.user_id IS NOT NULL)
+        ORDER BY c.IsDefault DESC, c.Id
+    `, { name, userId });
+
+    const chords = result.recordset;
+    if (chords.length === 0) return chords;
+
+    const chordIds = chords.map(c => c.Id);
+
+    // Get fingerings
+    const fingeringResult = await db.query(`
+        SELECT ChordId, StringNumber, FretNumber, FingerNumber
+        FROM ChordFingerings
+        WHERE ChordId IN (${chordIds.join(',')})
+        ORDER BY ChordId, StringNumber
+    `);
+
+    // Get barres
+    const barreResult = await db.query(`
+        SELECT ChordId, FretNumber
+        FROM ChordBarres
+        WHERE ChordId IN (${chordIds.join(',')})
+        ORDER BY ChordId, FretNumber
+    `);
+
+    // Map fingerings
+    const fingeringMap = {};
+    fingeringResult.recordset.forEach(f => {
+        if (!fingeringMap[f.ChordId]) {
+            fingeringMap[f.ChordId] = { frets: new Array(6).fill(0), fingers: new Array(6).fill(0) };
+        }
+        fingeringMap[f.ChordId].frets[f.StringNumber - 1] = f.FretNumber;
+        fingeringMap[f.ChordId].fingers[f.StringNumber - 1] = f.FingerNumber;
+    });
+
+    // Map barres
+    const barreMap = {};
+    barreResult.recordset.forEach(b => {
+        if (!barreMap[b.ChordId]) barreMap[b.ChordId] = [];
+        barreMap[b.ChordId].push(b.FretNumber);
+    });
+
+    // Attach to chords
+    chords.forEach(c => {
+        const data = fingeringMap[c.Id];
+        c.frets = data ? data.frets : [];
+        c.fingers = data ? data.fingers : [];
+        c.barres = barreMap[c.Id] || [];
+    });
+
+    return chords;
+}
+
+async function setDefaultVariation(chordId, userId) {
+    // Check if user has access to the chord
+    const chord = await getChordById(chordId, userId);
+    if (!chord) throw new Error('Chord not found or access denied');
+
+    const pool = await db.connect();
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
+    try {
+        // Set IsDefault = 0 for all chords with the same name
+        await new sql.Request(transaction)
+            .input('name', sql.NVarChar, chord.Name)
+            .query('UPDATE Chords SET IsDefault = 0 WHERE Name = @name');
+
+        // Set IsDefault = 1 for this chord
+        await new sql.Request(transaction)
+            .input('chordId', sql.Int, chordId)
+            .query('UPDATE Chords SET IsDefault = 1 WHERE Id = @chordId');
+
+        await transaction.commit();
+    } catch (err) {
+        await transaction.rollback();
+        throw err;
+    }
+}
+
 async function updateChord(chordId, chord, userId) {
     const originalChord = await getChordById(chordId, userId);
     if (!originalChord) {
@@ -353,6 +436,8 @@ module.exports = {
     createChord,
     getChordById,
     getChordsByUserId,
+    getChordVariations,
+    setDefaultVariation,
     updateChord,
     deleteChord,
     shareChord,

@@ -53,6 +53,26 @@ router.get('/:id', authMiddleware, async (req, res) => {
     }
 });
 
+router.get('/variations/:name', authMiddleware, async (req, res) => {
+    try {
+        const variations = await chordService.getChordVariations(req.params.name, req.user.id);
+        res.json(variations);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.put('/:id/default', authMiddleware, async (req, res) => {
+    try {
+        await chordService.setDefaultVariation(req.params.id, req.user.id);
+        res.json({ message: 'Default variation updated' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 router.put('/:id', authMiddleware, async (req, res) => {
     try {
         const chord = await chordService.updateChord(req.params.id, req.body, req.user.id);
