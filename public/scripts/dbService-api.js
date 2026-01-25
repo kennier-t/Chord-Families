@@ -57,7 +57,7 @@ const DB_SERVICE = (function() {
     // Get only custom chords (not original)
     async function getCustomChords() {
         const allChords = await getAllChords();
-        return allChords.filter(c => !c.isOriginal);
+        return allChords.filter(c => !c.IsOriginal);
     }
     
     // Get chord by ID

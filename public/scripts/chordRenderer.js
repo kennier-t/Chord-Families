@@ -91,7 +91,7 @@ class ChordRenderer {
         if (this.showFretNumber) {
             const x = this.diagramLeft - 8;
             const y = this.diagramTop + this.fretSpacing / 2 + 4;
-            svg += `<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="black">${this.chord.baseFret}</text>`;
+            svg += `<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="black">${this.chord.BaseFret}</text>`;
         }
         
         // Draw strings (vertical)
@@ -103,7 +103,7 @@ class ChordRenderer {
         // Draw frets (horizontal)
         for (let i = 0; i <= this.frets; i++) {
             const y = this.diagramTop + i * this.fretSpacing;
-            const thickness = (i === 0 && this.chord.baseFret === 1) ? this.nutThickness : this.fretThickness;
+            const thickness = (i === 0 && this.chord.BaseFret === 1) ? this.nutThickness : this.fretThickness;
             svg += `<line x1="${this.diagramLeft}" y1="${y}" x2="${this.diagramLeft + this.diagramWidth}" y2="${y}" stroke="black" stroke-width="${thickness}"/>`;
         }
         
@@ -209,7 +209,7 @@ class ChordRenderer {
             ctx.font = '10px Arial';
             const x = this.diagramLeft - 8;
             const y = this.diagramTop + this.fretSpacing / 2;
-            ctx.fillText(this.chord.baseFret.toString(), x, y);
+            ctx.fillText(this.chord.BaseFret.toString(), x, y);
         }
         
         // Strings (vertical)
@@ -248,7 +248,7 @@ class ChordRenderer {
                     const maxString = Math.max(...stringPositions);
                     const x1 = this.diagramLeft + minString * this.stringSpacing;
                     const x2 = this.diagramLeft + maxString * this.stringSpacing;
-                    const fretPos = barreFret - this.chord.baseFret;
+                    const fretPos = barreFret - this.chord.BaseFret;
                     const y = this.diagramTop + (fretPos + 0.5) * this.fretSpacing;
                     
                     // Line connecting two circles
@@ -294,7 +294,7 @@ class ChordRenderer {
                 
                 if (!isBarre) {
                     const x = this.diagramLeft + i * this.stringSpacing;
-                    const fretPos = fret - this.chord.baseFret;
+                    const fretPos = fret - this.chord.BaseFret;
                     const y = this.diagramTop + (fretPos + 0.5) * this.fretSpacing;
                     
                     // Circle
