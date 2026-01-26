@@ -1,6 +1,7 @@
 const songSharesList = document.getElementById('song-shares-list');
 const chordSharesList = document.getElementById('chord-shares-list');
 const sendShareForm = document.getElementById('send-share-form');
+const backBtn = document.getElementById('back-btn');
 const token = localStorage.getItem('token');
 
 let userSongs = [];
@@ -9,6 +10,16 @@ let currentShareType = 'song';
 let currentShareItem = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Back button
+    backBtn.addEventListener('click', () => {
+        // If there's history, go back. Otherwise, close window
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.close();
+        }
+    });
+
     if (!token) {
         window.location.href = '/login.html';
         return;

@@ -1,9 +1,20 @@
 const profileForm = document.getElementById('profile-form');
 const passwordForm = document.getElementById('password-form');
+const backBtn = document.getElementById('back-btn');
 const token = localStorage.getItem('token');
 let currentLanguagePref = 'en';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Back button
+    backBtn.addEventListener('click', () => {
+        // If there's history, go back. Otherwise, close window
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.close();
+        }
+    });
+
     if (!token) {
         window.location.href = '/login.html';
     }
