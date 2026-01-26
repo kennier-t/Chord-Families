@@ -36,10 +36,123 @@ body {
     justify-content: center;
 }
 
+header {
+    padding: 0;
+    background: var(--bg-card);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.user-section {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 24px 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    border: none;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Helvetica Neue', 'Arial', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(139, 111, 71, 0.2);
+}
+
+.user-section:hover {
+    transform: translateY(-2px);
+}
+
+.user-icon {
+    width: 20px;
+    height: 20px;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+    transition: all 0.3s ease;
+}
+
+.username {
+    margin-left: 8px;
+    color: white;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 160px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 101;
+}
+
+.user-dropdown.hidden {
+    display: none;
+}
+
+.dropdown-item {
+    width: 100%;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    border: none;
+    border-radius: 0;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Helvetica Neue', 'Arial', sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(139, 111, 71, 0.2);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.dropdown-item:hover {
+    transform: translateY(-2px);
+}
+
+.dropdown-item img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+    transition: all 0.3s ease;
+}
+
+.logout-item {
+    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+}
+
+.logout-item:hover {
+    background: linear-gradient(135deg, #b71c1c 0%, #8b0000 100%);
+    transform: translateY(-2px);
+}
+
+.logout-item img {
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+}
+
 #app {
     width: 100%;
     max-width: 1280px;
     margin: auto;
+    padding-top: 60px; /* space for fixed header */
 }
 
 /* Modal styles */
@@ -170,16 +283,10 @@ h2::after {
     background: var(--primary);
 }
 
-/* Top buttons container - aligned horizontally */
+/* Main actions in navbar */
 .top-buttons-container {
     display: flex;
-    justify-content: stretch;
-    align-items: stretch;
-    margin-bottom: 48px;
-    margin-left: -40px;
-    margin-right: -40px;
-    margin-top: -40px;
-    padding-top: 0;
+    flex: 1;
     gap: 0;
     flex-wrap: nowrap;
 }
@@ -193,14 +300,16 @@ h2::after {
 }
 
 .utility-btn {
-    padding: 32px 28px;
+    flex: 1;
+    padding: 24px 20px;
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
     color: white;
     border: none;
     border-radius: 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 500;
     font-family: 'Helvetica Neue', 'Arial', sans-serif;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -208,10 +317,13 @@ h2::after {
     box-shadow: 0 4px 12px rgba(139, 111, 71, 0.2);
     position: relative;
     overflow: hidden;
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.utility-btn:hover {
+    transform: translateY(-2px);
 }
 
 .utility-btn::before {

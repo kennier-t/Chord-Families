@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeUtilityButtons();
     initializeVariationIconHandler();
     initializePracticeButton();
-    initializeLogoutButton();
     initializeShareButton();
 });
 
@@ -89,19 +88,76 @@ async function checkAuth() {
 }
 
 function displayUserProfile() {
-    const profileLink = document.createElement('a');
-    profileLink.href = '/profile.html';
-    profileLink.textContent = `Welcome, ${user.first_name}`;
-    document.querySelector('header').appendChild(profileLink);
+    const header = document.querySelector('header');
+
+    // User section (icon + username, clickable)
+    const userSection = document.createElement('div');
+    userSection.className = 'user-section';
+    userSection.addEventListener('click', toggleUserMenu);
+
+    // User icon
+    const userIcon = document.createElement('img');
+    userIcon.src = 'assets/user.png';
+    userIcon.alt = 'User';
+    userIcon.className = 'user-icon';
+    userSection.appendChild(userIcon);
+
+    // Username
+    const usernameDiv = document.createElement('div');
+    usernameDiv.className = 'username';
+    usernameDiv.textContent = user.first_name;
+    userSection.appendChild(usernameDiv);
+
+    // Append user section to the top-buttons-container
+    const buttonsContainer = document.querySelector('.top-buttons-container');
+    buttonsContainer.appendChild(userSection);
+
+    // Dropdown menu
+    const dropdown = document.createElement('div');
+    dropdown.id = 'user-dropdown';
+    dropdown.className = 'user-dropdown hidden';
+
+    const settingsItem = document.createElement('div');
+    settingsItem.className = 'dropdown-item';
+    const settingsIcon = document.createElement('img');
+    settingsIcon.src = 'assets/settings.png';
+    settingsIcon.alt = 'Settings';
+    settingsItem.appendChild(settingsIcon);
+    const settingsText = document.createElement('span');
+    settingsText.textContent = 'Settings';
+    settingsItem.appendChild(settingsText);
+    settingsItem.addEventListener('click', () => {
+        window.location.href = '/profile.html';
+    });
+    dropdown.appendChild(settingsItem);
+
+    const logoutItem = document.createElement('div');
+    logoutItem.className = 'dropdown-item logout-item';
+    const logoutIcon = document.createElement('img');
+    logoutIcon.src = 'assets/logout.png';
+    logoutIcon.alt = 'Logout';
+    logoutItem.appendChild(logoutIcon);
+    const logoutText = document.createElement('span');
+    logoutText.textContent = 'Log out';
+    logoutItem.appendChild(logoutText);
+    logoutItem.addEventListener('click', logout);
+    dropdown.appendChild(logoutItem);
+
+    header.appendChild(dropdown);
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!header.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
 }
 
-function initializeLogoutButton() {
-    const logoutBtn = document.createElement('button');
-    logoutBtn.id = 'logout-btn';
-    logoutBtn.textContent = 'Logout';
-    logoutBtn.addEventListener('click', logout);
-    document.querySelector('header').appendChild(logoutBtn);
+function toggleUserMenu() {
+    const dropdown = document.getElementById('user-dropdown');
+    dropdown.classList.toggle('hidden');
 }
+
 
 function logout() {
     localStorage.removeItem('token');
@@ -389,6 +445,22 @@ function initializeUtilityButtons() {
     if (openSharesBtn) {
         openSharesBtn.addEventListener('click', () => {
             window.open('shares.html', '_blank');
+        });
+    }
+
+    const chordAiBtn = document.getElementById('chord-ai-btn');
+    if (chordAiBtn) {
+        chordAiBtn.addEventListener('click', () => {
+            const modal = document.getElementById('chord-ai-modal');
+            modal.classList.remove('hidden');
+        });
+    }
+
+    const closeChordAiModal = document.getElementById('close-chord-ai-modal');
+    if (closeChordAiModal) {
+        closeChordAiModal.addEventListener('click', () => {
+            const modal = document.getElementById('chord-ai-modal');
+            modal.classList.add('hidden');
         });
     }
 }

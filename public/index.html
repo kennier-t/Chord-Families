@@ -12,18 +12,20 @@
     <link rel="stylesheet" href="styles/practice-modal.css">
 </head>
 <body>
-    <header></header>
+    <header>
+        <div class="top-buttons-container">
+            <button id="create-chord-btn" class="utility-btn utility-btn-modern" data-translate="Create Chord">Create Chord</button>
+            <button id="gen-song-chords-btn" class="utility-btn utility-btn-modern" data-translate="Gen Song Chords">Gen Song Chords</button>
+            <button id="open-shares-btn" class="utility-btn utility-btn-modern" data-translate="Shares">Shares</button>
+            <button id="open-songs-btn" class="utility-btn utility-btn-modern" data-translate="Songs">Songs</button>
+            <button id="chord-ai-btn" class="utility-btn utility-btn-modern" data-translate="ChordAI">ChordAI</button>
+            <button id="pdf-to-text-btn" class="utility-btn utility-btn-modern" data-translate="PDF → Text">PDF → Text</button>
+        </div>
+    </header>
     <div id="app">
         <!-- Main view: chord families -->
         <div id="families-view" class="view">
             <img id="language-toggle" src="assets/translate.png" alt="Language Toggle">
-            <div class="top-buttons-container">
-                <button id="gen-song-chords-btn" class="utility-btn utility-btn-modern" data-translate="Gen Song Chords">Gen Song Chords</button>
-                <button id="open-songs-btn" class="utility-btn utility-btn-modern" data-translate="Songs">Songs</button>
-                <button id="open-shares-btn" class="utility-btn utility-btn-modern" data-translate="Shares">Shares</button>
-                <button id="create-chord-btn" class="utility-btn utility-btn-modern" data-translate="Create Chord">Create Chord</button>
-                <button id="pdf-to-text-btn" class="utility-btn utility-btn-modern" data-translate="PDF → Text">PDF → Text</button>
-            </div>
             <h1 data-translate="ChordSmith">ChordSmith</h1>
             <div class="families-grid">
                 <button class="family-btn" data-family="C">C</button>
@@ -408,6 +410,16 @@
                     <input type="text" id="recipient-username" name="recipient-username" required>
                 </div>
                 <button id="share-btn" class="download-btn" data-translate="Share">Share</button>
+            </div>
+        </div>
+
+        <!-- Modal for ChordAI -->
+        <div id="chord-ai-modal" class="modal hidden">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <button id="close-chord-ai-modal" class="close-btn">×</button>
+                <h2 data-translate="ChordAI">ChordAI</h2>
+                <p data-translate="Available soon">Available soon</p>
             </div>
         </div>
     </div>
